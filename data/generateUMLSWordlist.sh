@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-set -x
 
 # Get the location of this script for future use
 HERE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -29,6 +28,8 @@ elif [[ $# -ne $expectedArgs ]]; then
 	usage
 	exit 255
 fi
+
+set -x
 
 # Points towards directory containing UMLS files
 umlsDir=$1
