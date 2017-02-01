@@ -24,6 +24,13 @@ bash data/generateUMLSWordlist.sh /projects/bioracle/ncbiData/umls/2016AB/META/ 
 
 ## Run text mining across all PubMed and PubMed Central
 
+First we generate a list of commands to parse all the text files. This is for use on a cluster.
+
+```bash
+cd workingDir
+bash ../text_extraction/generateCommandLists.sh
+```
+
 ## Combine data into a dataset for analysis
 
 ## Generate ANNI Vectors
