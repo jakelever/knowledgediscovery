@@ -8,6 +8,7 @@ from contextlib import closing
 import time
 import logging
 import sys
+import numpy as np
 
 def D(v,w,cooccurrences,occurrences):
 	p1 = cooccurrences[(v,w)] / float(occurrences[v])
@@ -41,114 +42,18 @@ def calculateJaccardIndex(x,z,neighbours,cooccurrences,occurrences):
 def calculatePreferentialAttachment(x,z,neighbours,cooccurrences,occurrences):
 	score = len(neighbours[x]) + len(neighbours[z])
 	return score
-
-def H1(i,occurrences,sentenceCount):
-	N_i = float(occurrences[i])
-	N = float(sentenceCount)
-	score = -(N_i/N) * log(N_i/N) - ((N-N_i)/N) * log((N-N_i)/N)
-	return score
-
-def H2(i,j,cooccurrences,occurrences,sentenceCount):
-	N_ij = 0
-	if (i,j) in cooccurrences:
-		N_ij = float(cooccurrences[(i,j)])
-	N_i = float(occurrences[i])
-	N_j = float(occurrences[j])
-	N = float(sentenceCount)
-
-	if N_ij==0 or (N_j-N_ij)==0 or (N_i-N_ij)==0 or (N-N_j-N_i)==0:
-		return 0.0
-	else:
-		#print "N_i=%f N_j=%f N_ij=%f N=%f" % (N_i,N_j,N_ij,N)
-		#score = -(N_ij/N) * log(N_ij/N) - ((N_j-N_ij)/N) * log((N_j-N_ij)/N) - ((N_i-N_ij)/N) * log((N_i-N_ij)/N) - ((N-N_j-N_i)/N) * log((N-N_j-N_i)/N)
-		score = -(N_ij/N) * log(N_ij/N) 
-		score += - ((N_j-N_ij)/N) * log((N_j-N_ij)/N)
-		score += - ((N_i-N_ij)/N) * log((N_i-N_ij)/N)
-		score += - ((N-N_j-N_i)/N) * log((N-N_j-N_i)/N)
-		return score
-
-def U(i,j,cooccurrences,occurrences,sentenceCount):
-	H2score = H2(i,j,cooccurrences,occurrences,sentenceCount)
-	numerator = H1(i,occurrences,sentenceCount) + H1(j,occurrences,sentenceCount) + H2score
-	denominator = 0.5 * H2score
-	if denominator == 0:
-		return 0.0
-	else:
-		return numerator/denominator
-
-def calcANNIVector(allEntities,cooccurrences,occurrences,sentenceCount,queue,x):
-	try:
-		anniVector = [ U(x,y,cooccurrences,occurrences,sentenceCount) for y in allEntities ]
-	#except Exception:
-	#	logging.exception("f(%r) failed" % (x,))
-	except:
-		print "Unexpected error:", sys.exc_info()[0], x
-		raise
-		
-	#print x
-	queue.put(x)
-	return anniVector
-
-def prepareANNIConceptVectors(entitiesToScore,neighbours,cooccurrences,occurrences,sentenceCount):
-	allEntities = sorted(list(occurrences.keys()))
-	#conceptVectors = { x: [ U(x,y,cooccurrences,occurrences,sentenceCount) for y in allEntities ] for x in entitiesToScore }
-	#conceptVectors = {}
-	#for x in entitiesToScore:
-	#	conceptVectors[x] = [ U(x,y,cooccurrences,occurrences,sentenceCount) for y in allEntities ]
-	#	print x
-	print "Starting multiprocessing..."
-	m = Manager()
-	q = m.Queue()
-
-	shared_allEntities = m.list(allEntities)
-	shared_cooccurrences = m.dict(cooccurrences)
-	shared_occurrences = m.dict(occurrences)
-
-	func = partial(calcANNIVector,shared_allEntities,shared_cooccurrences,shared_occurrences,sentenceCount,q)
-
-	args = [ (e,q) for e in entitiesToScore ]
-
-	for e in entitiesToScore:
-		assert e in allEntities, "Entity %d to score is not in the occurrence data" % e
-
-	with closing(Pool(32)) as p:
-		#conceptVectors = p.map(func,entitiesToScores)
-		result = p.map_async(func,entitiesToScore)
-		nextPerc = 0.0
-		while True:
-			if result.ready():
-				break
-			else:
-				size = q.qsize()
-				perc = 100.0 * q.qsize() / float(len(entitiesToScore))
-				#print size,len(args)
-				if perc > nextPerc:
-					datetime = time.strftime("%H:%M:%S %d/%m/%Y")
-					print "%s : %.1f%%" % (datetime,perc)
-					nextPerc = perc + 0.5
-				time.sleep(0.1)
-
-		conceptVectors = result.get()
-		
-		p.terminate()
-		if not result.successful():
-			raise RuntimeError('ANNIVector calculation failed.')
-	print "Completed multiprocessing"
-
-	print "Converting to dictionary..."
-	# Convert to a dictionary
-	conceptVectors = { e:vec for e,vec in zip(entitiesToScore,conceptVectors) }
-	print "Converted to dictionary."
-
-	return conceptVectors
 				
-def calculateANNIScore(x,z,conceptVectors):
-	vectorX = conceptVectors[x]
-	vectorZ = conceptVectors[z]
+def calculateANNIScore(x,z,conceptVectorsIndex,conceptVectors):
+	indexX = conceptVectorsIndex[x]
+	indexZ = conceptVectorsIndex[z]
+	
+	vectorX = conceptVectors[indexX,:]
+	vectorZ = conceptVectors[indexZ,:]
+	dotprod = np.dot(vectorX,vectorZ)
 	#entities = vectorX.keys().intersection(vectorZ.keys())
 	#dotprod = sum( [ vectorX[e]*vectorZ[e] for e in entities ] )
-	assert len(vectorX) == len(vectorZ)
-	dotprod = sum( [ i*j for i,j in zip(vectorX,vectorZ) ] )
+	#assert len(vectorX) == len(vectorZ)
+	#dotprod = sum( [ i*j for i,j in zip(vectorX,vectorZ) ] )
 	return dotprod
 
 if __name__ == '__main__':
@@ -157,6 +62,8 @@ if __name__ == '__main__':
 	parser.add_argument('--occurrenceFile',type=str,required=True,help='File containing occurrences')
 	parser.add_argument('--sentenceCount',type=str,required=True,help='File containing sentence count')
 	parser.add_argument('--relationsToScore',type=str,required=True,help='File containing relations to score')
+	parser.add_argument('--anniVectors',type=str,required=True,help='File containing the raw ANNI vector data')
+	parser.add_argument('--anniVectorsIndex',type=str,required=True,help='File containing the index for the ANNI vector data')
 	parser.add_argument('--outFile',type=str,required=True,help='File to output scores to')
 
 	args = parser.parse_args()
@@ -200,9 +107,18 @@ if __name__ == '__main__':
 			neighbours[y].add(x)
 	print "Loaded cooccurrences"
 
-	print "Preparing ANNI concept vectors..."
-	anniConceptVectors = prepareANNIConceptVectors(entitiesToScore,neighbours,cooccurrences,occurrences,sentenceCount)
-	print "Prepared ANNI concept vectors"
+	print "Loading ANNI concept vectors..."
+	#anniConceptVectors = prepareANNIConceptVectors(entitiesToScore,neighbours,cooccurrences,occurrences,sentenceCount)
+	with open(args.anniVectorsIndex) as f:
+		anniVectorsIndex = { int(line.strip()):i for i,line in enumerate(f) }
+	
+	with open(args.anniVectors,'rb') as f:
+		anniConceptVectors = np.fromfile(f,np.float32)
+		vectorSize = int(anniConceptVectors.shape[0] / len(anniVectorsIndex))
+		anniConceptVectors = anniConceptVectors.reshape((len(anniVectorsIndex),vectorSize))
+		
+	
+	print "Loaded ANNI concept vectors"
 
 	print "Scoring..."
 	with open(args.outFile,'w') as outF:
@@ -211,7 +127,7 @@ if __name__ == '__main__':
 				print i
 			factaPlusScore = calculateFactaPlusScore(x,z,neighbours,cooccurrences,occurrences)
 			bitolaScore = calculateBitolaScore(x,y,neighbours,cooccurrences,occurrences)
-			anniScore = calculateANNIScore(x,y,anniConceptVectors)
+			anniScore = calculateANNIScore(x,y,anniVectorsIndex,anniConceptVectors)
 			arrowsmithScore = calculateArrowsmithScore(x,y,neighbours,cooccurrences,occurrences)
 			jaccardScore = calculateJaccardIndex(x,y,neighbours,cooccurrences,occurrences)
 			preferentialAttachmentScore = calculatePreferentialAttachment(x,y,neighbours,cooccurrences,occurrences)
