@@ -16,6 +16,12 @@ This involves downloading UMLS from https://www.nlm.nih.gov/research/umls/licens
 
 ## Create the UMLS-based word-list
 
+A script will pull out the necessary terms, their IDs, semantic types and synonyms from the UMLS RRF files.
+
+```bash
+bash data/generateUMLSWordlist.sh /projects/bioracle/ncbiData/umls/2016AB/META/ workingDir/
+```
+
 ## Run text mining across all PubMed and PubMed Central
 
 ## Combine data into a dataset for analysis
