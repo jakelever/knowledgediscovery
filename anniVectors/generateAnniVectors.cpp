@@ -18,6 +18,8 @@
 #include <locale>
 #include <sstream>
 
+#include <omp.h>
+
 #include <algorithm>
 #include <tclap/CmdLine.h>
 
@@ -204,13 +206,16 @@ int main(int argc, char** argv)
 		printf("vectorsToCalculate_array_size=%d\n",vectorsToCalculate_array_size);
 		printf("seen_size=%d\n",seen_size);
 		
-		float *tmpData = (float*)malloc(seen_size*sizeof(float));
+		float *allTmpData = (float*)malloc(omp_get_max_threads()*seen_size*sizeof(float));
+		
+		int complete = 0;
+		#pragma omp parallel for
 		for ( int i=0; i<vectorsToCalculate_array_size; i++ )
 		{
+			float *tmpData = &allTmpData[seen_size*omp_get_thread_num()];
 			//int v1 = *it1;
 			int v1 = vectorsToCalculate_array[i];
 			//for ( auto it2 = occurrences.begin(); it2 != occurrences.end(); ++it2 )
-			printf("%d\n", v1);
 			
 			//fprintf(outIndexFile,"%d\n", v1);
 			for ( int j=0; j<seen_size; j++ )
@@ -234,8 +239,24 @@ int main(int argc, char** argv)
 			}
 			//fprintf(outVectorFile, "\n");
 			
-			fprintf(outIndexFile,"%d\n", v1);
-			fwrite(tmpData, sizeof(float), seen_size, outVectorFile);
+			#pragma omp critical
+			{
+				if ((complete%1000)==0)
+				{
+					time_t rawtime;
+					struct tm * timeinfo;
+					char timebuffer[256];
+
+					time (&rawtime);
+					timeinfo = localtime (&rawtime);
+					strftime(timebuffer, sizeof(timebuffer), "%a %b %d %H:%M:%S %Y", timeinfo);
+					printf("%s : %d / %d\n", timebuffer, complete, vectorsToCalculate_array_size);
+				}
+				
+				fprintf(outIndexFile,"%d\n", v1);
+				fwrite(tmpData, sizeof(float), seen_size, outVectorFile);
+				complete++;
+			}
 			
 			//break;
 		}

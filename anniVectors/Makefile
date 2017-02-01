@@ -1,8 +1,8 @@
 TARGET = generateAnniVectors
-LIBS = 
+LIBS = -fopenmp
 CC = g++
 
-CFLAGS = -Wall -O3 -I ../dependencies/tclap-1.2.1/include -std=c++0x -march=native
+CFLAGS = -Wall -O3 -I ../dependencies/tclap-1.2.1/include -std=c++0x -march=native -fopenmp
 
 .PHONY: default all clean
 
