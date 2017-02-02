@@ -2,12 +2,34 @@
 
 All this code WILL BE in a master script that can run the entire analysis.
 
+## Install Dependencies
+
+There are a few dependencies to install first. Run the following scripts and make sure they all succeeded.
+
+```bash
+cd dependencies
+bash install.geniatagger.sh
+bash install.powergraph.sh
+bash install.lingpipe.sh
+bash install.tclap.sh
+cd ../
+```
+
+## Working Directory
+
+We're going to do all analysis inside a working directory and call the various scripts from within it. So in the root of this repo we do the following.
+
+```bash
+mkdir workingDir
+cd workingDir
+```
+
 ## Download PubMed and PubMed Central
 
 We need to download the abstracts from PubMed and full text articles from the PubMed Central Open Access subset. This is all managed by the prepareMedlineANDPMCData.sh script.
 
 ```bash
-bash data/prepareMedlineAndPMCData.sh /projects/bioracle/ncbiData/2017/
+bash ../prepareMedlineAndPMCData.sh medlineAndPMC
 ```
 
 ## Install UMLS
@@ -19,7 +41,7 @@ This involves downloading UMLS from https://www.nlm.nih.gov/research/umls/licens
 A script will pull out the necessary terms, their IDs, semantic types and synonyms from the UMLS RRF files.
 
 ```bash
-bash data/generateUMLSWordlist.sh /projects/bioracle/ncbiData/umls/2016AB/META/ workingDir/
+bash ../data/generateUMLSWordlist.sh /projects/bioracle/ncbiData/umls/2016AB/META/ workingDir/
 ```
 
 ## Run text mining across all PubMed and PubMed Central
