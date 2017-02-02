@@ -49,7 +49,6 @@ bash ../data/generateUMLSWordlist.sh /projects/bioracle/ncbiData/umls/2016AB/MET
 First we generate a list of commands to parse all the text files. This is for use on a cluster.
 
 ```bash
-cd workingDir
 bash ../text_extraction/generateCommandLists.sh
 ```
 
