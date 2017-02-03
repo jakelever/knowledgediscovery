@@ -44,6 +44,12 @@ A script will pull out the necessary terms, their IDs, semantic types and synony
 bash ../data/generateUMLSWordlist.sh /projects/bioracle/ncbiData/umls/2016AB/META/ workingDir/
 ```
 
+We then need to process this wordlist into a Python pickled file and remove stop-words and short words.
+
+```bash
+python ../text_extraction/cooccurrenceMajigger.py --termsWithSynonymsFile umlsWordlist.Final.txt --stopwordsFile ../data/selected_stopwords.txt --removeShortwords --binaryTermsFile_out umlsWordlist.Final.pickle
+```
+
 ## Run text mining across all PubMed and PubMed Central
 
 First we generate a list of commands to parse all the text files. This is for use on a cluster.
