@@ -86,7 +86,7 @@ if __name__ == "__main__":
 				handle.write(etree.tostring(elem).strip() + "\n")
 			except:
 				pmid = elem.findall('./PMID')[0].text
-				print "ERROR at: "+f+"\t"+pmid
+				print "ERROR at: "+args.medlineXML+"\t"+pmid
 				sys.exit(255)
 				
 			elem.clear()
