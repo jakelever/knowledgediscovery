@@ -40,8 +40,7 @@ cut -f 1 -d $'\t' $medlinePMCDir/pmcSummary.txt | sed -e '/^$/d' | sort -n -u > 
 
 # Now we split the larger set of Medline XML files by publication date
 mkdir $medlinePMCDir/filteredMedline
-find $medlinePMCDir/medline -name '*.xml' |\
-xargs -I FILE python $HERE/splitMedlineXMLByYear.py --medlineXML FILE --outDir $medlinePMCDir/filteredMedline --pmidExclusionFile $medlinePMCDir/pmcPMIDs.txt
+python $HERE/splitMedlineXMLDirByYear.py --medlineXMLDir $medlinePMCDir/medline --pmidExclusionFile $medlinePMCDir/pmcPMIDs.txt --outDir $medlinePMCDir/filteredMedline
 
 # And finally we generate lists of PMC articles based on publication date
 bash $HERE/generateArticleListsByYear.sh $medlinePMCDir/pmcSummary.txt $medlinePMCDir/articleLists
