@@ -29,7 +29,7 @@ cd workingDir
 We need to download the abstracts from PubMed and full text articles from the PubMed Central Open Access subset. This is all managed by the prepareMedlineANDPMCData.sh script.
 
 ```bash
-bash ../prepareMedlineAndPMCData.sh medlineAndPMC
+bash ../data/prepareMedlineAndPMCData.sh medlineAndPMC
 ```
 
 ## Install UMLS
