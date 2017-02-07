@@ -162,7 +162,7 @@ For SVD
 ```bash
 python ../analysis/calcSVDScores.py --svdU svd.trainingAndValidation.U --svdV svd.trainingAndValidation.V --svdSV svd.trainingAndValidation.SV --relationsToScore finalDataset/testing.all.cooccurrences --outFile scores.testing.positive.svd --sv $optimalSV
   
-python ../analysis/calcSVDScores.py --svdU svd.trainingAndValidation.U --svdV svd.trainingAndValidation.V --svdSV svd.trainingAndValidation.SV --relationsToScore testing.all.negativeData --outFile scores.testing.negative.svd --sv $optimalSV
+python ../analysis/calcSVDScores.py --svdU svd.trainingAndValidation.U --svdV svd.trainingAndValidation.V --svdSV svd.trainingAndValidation.SV --relationsToScore testing.negativeData --outFile scores.testing.negative.svd --sv $optimalSV
 ```
 
 ## Generate precision/recall curves for each method with associated statistics
