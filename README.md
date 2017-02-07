@@ -60,6 +60,12 @@ bash ../text_extraction/generateCommandLists.sh
 
 ## Combine data into a dataset for analysis
 
+We first need to extract the cooccurrences, occurrences and sentence counts from the mined data (as they're all combined in the same output files)
+
+```bash
+bash ../data/splitDataTypes.sh mined mined_and_separated
+```
+
 ## Generate ANNI Vectors
 
 ## Run Singular Value Decomposition
