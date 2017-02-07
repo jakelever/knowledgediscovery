@@ -74,6 +74,14 @@ bash ../combine_data/produceDataset.sh mined_and_separated/cooccurrences mined_a
 
 ## Generate ANNI Vectors
 
+ANNI requires creating concept vectors for all concepts
+
+```bash
+../anniVectors/generateAnniVectors --cooccurrenceData finalDataset/training.cooccurrences --occurrenceData finalDataset/training.occurrences --sentenceCount `cat finalDataset/training.sentenceCounts` --vectorsToCalculate finalDataset/training.ids --outIndexFile anni.training.index --outVectorFile anni.training.vectors
+
+../anniVectors/generateAnniVectors --cooccurrenceData finalDataset/trainingAndValidation.cooccurrences --occurrenceData finalDataset/trainingAndValidation.occurrences --sentenceCount `cat finalDataset/trainingAndValidation.sentenceCounts` --vectorsToCalculate finalDataset/trainingAndValidation.ids --outIndexFile anni.trainingAndValidation.index --outVectorFile anni.trainingAndValidation.vectors
+```
+
 ## Run Singular Value Decomposition
 
 ## Generate negative data for comparison
