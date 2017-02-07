@@ -116,9 +116,25 @@ bash ../analysis/runSVD.sh --dimension `cat umlsWordlist.Final.txt | wc -l` --sv
 Now we need to test a range of singular values to find the optimal value
 
 ```bash
-python ../analysis/calcSVDScores.py --svdU svd.training.U --svdV svd.training.V --svdSV svd.training.SV --relationsToScore finalDataset/validation.cooccurrences --outFile scores.validation.positive.svd --sv 50
+for sv in `seq 5 100`
+do 
+  
+  echo $sv
+  
+  python ../analysis/calcSVDScores.py --svdU svd.training.U --svdV svd.training.V --svdSV svd.training.SV --relationsToScore finalDataset/validation.cooccurrences --outFile scores.validation.positive.svd --sv $sv
+  
+  python ../analysis/calcSVDScores.py --svdU svd.training.U --svdV svd.training.V --svdSV svd.training.SV --relationsToScore validation.negativeData --outFile scores.validation.negative.svd --sv $sv
+  
+  python ../analysis/evaluate.py --positiveScores <(cut -f 3 scores.validation.positive.svd) --negativeScores <(cut -f 3 scores.validation.negative.svd) --classBalance $classBalance --analysisName "$sv" >> svd.results
+  
+done
+```
 
-python ../analysis/calcSVDScores.py --svdU svd.training.U --svdV svd.training.V --svdSV svd.training.SV --relationsToScore validation.negativeData --outFile scores.validation.negative.svd --sv 50
+Then we calculate the Area under the Precision Recall curve for each # of singular values and find the optimal value
+
+```bash
+/gsc/software/linux-x86_64/python-2.7.5/bin/python ../analysis/statsCalculator.py --evaluationFile svd.results > curves.svd
+sort -k3,3n curves.svd | tail -n 1 | cut -f 1 > parameters.sv
 ```
 
 ## Calculate scores for positive & negative relationships
