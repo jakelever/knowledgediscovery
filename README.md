@@ -135,26 +135,25 @@ Then we calculate the Area under the Precision Recall curve for each # of singul
 ```bash
 /gsc/software/linux-x86_64/python-2.7.5/bin/python ../analysis/statsCalculator.py --evaluationFile svd.results > curves.svd
 sort -k3,3n curves.svd | tail -n 1 | cut -f 1 > parameters.sv
+optimalSV=`cat parameters.sv`
 ```
 
 ## Calculate scores for positive & negative relationships
 
-For positive:
+For positive and negative
 
 ```bash
-python ../analysis/ScoreImplicitRelations.py --cooccurrenceFile finalDataset/training.cooccurrences --occurrenceFile finalDataset/training.occurrences --sentenceCount finalDataset/training.sentenceCounts --relationsToScore finalDataset/validation.cooccurrences --anniVectors anni.training.vectors --anniVectorsIndex anni.training.index --outFile scores.validation.positive
-
 python ../analysis/ScoreImplicitRelations.py --cooccurrenceFile finalDataset/trainingAndValidation.cooccurrences --occurrenceFile finalDataset/trainingAndValidation.occurrences --sentenceCount finalDataset/trainingAndValidation.sentenceCounts --relationsToScore finalDataset/testing.all.cooccurrences --anniVectors anni.trainingAndValidation.vectors --anniVectorsIndex anni.trainingAndValidation.index --outFile scores.testing.positive
 
+python ../analysis/ScoreImplicitRelations.py --cooccurrenceFile finalDataset/trainingAndValidation.cooccurrences --occurrenceFile finalDataset/trainingAndValidation.occurrences --sentenceCount finalDataset/trainingAndValidation.sentenceCounts --relationsToScore testing.negativeData --anniVectors anni.trainingAndValidation.vectors --anniVectorsIndex anni.trainingAndValidation.index --outFile scores.testing.negative
 ```
 
-For negative:
+For SVD
 
 ```bash
-python ../analysis/ScoreImplicitRelations.py --cooccurrenceFile finalDataset/training.cooccurrences --occurrenceFile finalDataset/training.occurrences --sentenceCount finalDataset/training.sentenceCounts --relationsToScore validation.negativeData --anniVectors anni.training.vectors --anniVectorsIndex anni.training.index --outFile scores.validation.negative
-
-python ../analysis/ScoreImplicitRelations.py --cooccurrenceFile finalDataset/trainingAndValidation.cooccurrences --occurrenceFile finalDataset/trainingAndValidation.occurrences --sentenceCount finalDataset/trainingAndValidation.sentenceCounts --relationsToScore testing.negativeData --anniVectors anni.trainingAndValidation.vectors --anniVectorsIndex anni.trainingAndValidation.index --outFile scores.testing.negative
-
+python ../analysis/calcSVDScores.py --svdU svd.trainingAndValidation.U --svdV svd.trainingAndValidation.V --svdSV svd.trainingAndValidation.SV --relationsToScore finalDataset/testing.all.cooccurrences --outFile scores.testing.positive.svd --sv $optimalSV
+  
+python ../analysis/calcSVDScores.py --svdU svd.trainingAndValidation.U --svdV svd.trainingAndValidation.V --svdSV svd.trainingAndValidation.SV --relationsToScore testing.all.negativeData --outFile scores.testing.negative.svd --sv $optimalSV
 ```
 
 ## Generate precision/recall curves for each method with associated statistics
@@ -170,21 +169,23 @@ classBalance=`echo "$testCount / (($termCount*($termCount+1)/2) - $knownCount)" 
 Then we run evaluate on the separate columns of the score file
 
 ```bash
-python ../analysis/evaluate.py --positiveScores <(cut -f 3 scores.validation.positive) --negativeScores <(cut -f 3 scores.validation.negative) --classBalance $classBalance --analysisName factaPlus >> curves.rest
+python ../analysis/evaluate.py --positiveScores <(cut -f 3 scores.testing.positive.svd) --negativeScores <(cut -f 3 scores.testing.negative.svd) --classBalance $classBalance --analysisName "SVD_$optimalSV" >> curves.all
 
-python ../analysis/evaluate.py --positiveScores <(cut -f 4 scores.validation.positive) --negativeScores <(cut -f 4 scores.validation.negative) --classBalance $classBalance --analysisName bitola >> curves.rest
+python ../analysis/evaluate.py --positiveScores <(cut -f 3 scores.testing.positive) --negativeScores <(cut -f 3 scores.testing.negative) --classBalance $classBalance --analysisName factaPlus >> curves.all
 
-python ../analysis/evaluate.py --positiveScores <(cut -f 5 scores.validation.positive) --negativeScores <(cut -f 5 scores.validation.negative) --classBalance $classBalance --analysisName anni >> curves.rest
+python ../analysis/evaluate.py --positiveScores <(cut -f 4 scores.testing.positive) --negativeScores <(cut -f 4 scores.testing.negative) --classBalance $classBalance --analysisName bitola >> curves.all
 
-python ../analysis/evaluate.py --positiveScores <(cut -f 6 scores.validation.positive) --negativeScores <(cut -f 6 scores.validation.negative) --classBalance $classBalance --analysisName arrowsmith >> curves.rest
+python ../analysis/evaluate.py --positiveScores <(cut -f 5 scores.testing.positive) --negativeScores <(cut -f 5 scores.testing.negative) --classBalance $classBalance --analysisName anni >> curves.all
 
-python ../analysis/evaluate.py --positiveScores <(cut -f 7 scores.validation.positive) --negativeScores <(cut -f 7 scores.validation.negative) --classBalance $classBalance --analysisName jaccard >> curves.rest
+python ../analysis/evaluate.py --positiveScores <(cut -f 6 scores.testing.positive) --negativeScores <(cut -f 6 scores.testing.negative) --classBalance $classBalance --analysisName arrowsmith >> curves.all
 
-python ../analysis/evaluate.py --positiveScores <(cut -f 8 scores.validation.positive) --negativeScores <(cut -f 8 scores.validation.negative) --classBalance $classBalance --analysisName preferentialAttachment  >> curves.rest
+python ../analysis/evaluate.py --positiveScores <(cut -f 7 scores.testing.positive) --negativeScores <(cut -f 7 scores.testing.negative) --classBalance $classBalance --analysisName jaccard >> curves.all
+
+python ../analysis/evaluate.py --positiveScores <(cut -f 8 scores.testing.positive) --negativeScores <(cut -f 8 scores.testing.negative) --classBalance $classBalance --analysisName preferentialAttachment  >> curves.all
 ```
 
 Then we finally calculate the area under the precision recall curve for each method.
 
 ```bash
-/gsc/software/linux-x86_64/python-2.7.5/bin/python ../analysis/statsCalculator.py --evaluationFile scores.rest
+/gsc/software/linux-x86_64/python-2.7.5/bin/python ../analysis/statsCalculator.py --evaluationFile curves.all > curves.stats
 ```
