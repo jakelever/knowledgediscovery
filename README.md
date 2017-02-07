@@ -84,6 +84,15 @@ ANNI requires creating concept vectors for all concepts
 
 ## Run Singular Value Decomposition
 
+We'll run a singular value decomposition on the co-occurrence data.
+
+```bash
+bash ../analysis/runSVD.sh --dimension `cat umlsWordlist.Final.txt | wc -l` --svNum 500 --matrix finalDataset/training.cooccurrences --outU svd.training.U --outV svd.training.V --outSV svd.training.SV
+
+bash ../analysis/runSVD.sh --dimension `cat umlsWordlist.Final.txt | wc -l` --svNum 500 --matrix finalDataset/trainingAndValidation.cooccurrences --outU svd.trainingAndValidation.U --outV svd.trainingAndValidation.V --outSV svd.trainingAndValidation.SV
+```
+
+
 ## Generate negative data for comparison
 
 Next we'll create negative data to allow comparison of the different ranking methods.
