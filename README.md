@@ -132,3 +132,12 @@ python ../analysis/ScoreImplicitRelations.py --cooccurrenceFile finalDataset/tra
 ```
 
 ## Generate precision/recall curves for each method with associated statistics
+
+First we need to calculate the class balance.
+
+```bash
+termCount=`cat finalDataset/training.ids | wc -l`
+knownCount=`cat finalDataset/training.cooccurrences | wc -l`
+testCount=`cat finalDataset/validation.cooccurrences | wc -l`
+classBalance=`echo "$testCount / (($termCount*($termCount+1)/2) - $knownCount)" | bc -l`
+```
