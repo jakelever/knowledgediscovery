@@ -63,13 +63,13 @@ bash ../text_extraction/generateCommandLists.sh
 We first need to extract the cooccurrences, occurrences and sentence counts from the mined data (as they're all combined in the same output files)
 
 ```bash
-bash ../data/splitDataTypes.sh mined mined_and_separated
+bash ../combine_data/splitDataTypes.sh mined mined_and_separated
 ```
 
 Next up we merged these various cooccurrence, occurrence and sentence count files down into the final data set
 
 ```bash
-bash ../data/produceDataset.sh mined_and_separated/cooccurrences mined_and_separated/occurrences mined_and_separated/sentencecount 2010 finalDataset
+bash ../combine_data/produceDataset.sh mined_and_separated/cooccurrences mined_and_separated/occurrences mined_and_separated/sentencecount 2010 finalDataset
 ```
 
 ## Generate ANNI Vectors
