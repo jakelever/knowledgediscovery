@@ -15,6 +15,15 @@ bash install.tclap.sh
 cd ../
 ```
 
+## Compile ANNI vector generation code
+
+Most of the analysis code is in Python and doesn't require compilation. Only the code to generate ANNI concept vectors requires compilation as it is written in C++.
+
+```bash
+cd anniVectors
+make
+cd ../
+
 ## Working Directory
 
 We're going to do all analysis inside a working directory and call the various scripts from within it. So in the root of this repo we do the following.
