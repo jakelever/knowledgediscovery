@@ -47,10 +47,14 @@ cat $tmpDir/trainingAndValidationFiles.occurrences | xargs -I FILE ln -s FILE $t
 cat $tmpDir/trainingAndValidationFiles.sentenceCounts | xargs -I FILE ln -s FILE $tmpDir/trainingAndValidation/sentenceCounts
 
 bash $HERE/mergeMatrix_2keys.sh tmp/trainingAndValidation/cooccurrences/ $outDir/trainingAndValidation.cooccurrences
-bash $HERE/mergeMatrix_1key.sh tmp/trainingAndValidation/occurrences $outDir/trainingAndValidation.occurrences
+bash $HERE/mergeMatrix_1key.sh tmp/trainingAndValidation/occurrences $outDir/trainingAndValidation.occurrences.unfiltered
 bash $HERE/mergeMatrix_0keys.sh tmp/trainingAndValidation/sentenceCounts $outDir/trainingAndValidation.sentenceCounts
 
+# Get the list of term IDs that actually occur in cooccurrences
+cat $outDir/trainingAndValidation.cooccurrences | cut -f 1,2 -d $'\t' | tr '\t' '\n' | sort -un > $outDir/trainingAndValidation.ids
 
+bash $HERE/filterOccurrences.sh $outDir/trainingAndValidation.occurrences.unfiltered $outDir/trainingAndValidation.ids $outDir/trainingAndValidation.occurrences
+rm $outDir/trainingAndValidation.occurrences.unfiltered
 
 #############
 # Training  #
@@ -71,8 +75,14 @@ cat $tmpDir/trainingFiles.occurrences | xargs -I FILE ln -s FILE $tmpDir/trainin
 cat $tmpDir/trainingFiles.sentenceCounts | xargs -I FILE ln -s FILE $tmpDir/training/sentenceCounts
 
 bash $HERE/mergeMatrix_2keys.sh tmp/training/cooccurrences/ $outDir/training.cooccurrences
-bash $HERE/mergeMatrix_1key.sh tmp/training/occurrences $outDir/training.occurrences
+bash $HERE/mergeMatrix_1key.sh tmp/training/occurrences $outDir/training.occurrences.unfiltered
 bash $HERE/mergeMatrix_0keys.sh tmp/training/sentenceCounts $outDir/training.sentenceCounts
+
+# Get the list of term IDs that actually occur in cooccurrences
+cat $outDir/training.cooccurrences | cut -f 1,2 -d $'\t' | tr '\t' '\n' | sort -un > $outDir/training.ids
+
+bash $HERE/filterOccurrences.sh $outDir/training.occurrences.unfiltered $outDir/training.ids $outDir/training.occurrences
+rm $outDir/training.occurrences.unfiltered
 
 ##############
 # Validation #
@@ -84,7 +94,7 @@ ln -s $cooccurrenceDir/$splitYear* $tmpDir/validation/$splitYear/cooccurrences
 
 bash $HERE/mergeMatrix_2keys.sh $tmpDir/validation/$splitYear/cooccurrences $outDir/validation.cooccurrences
 
-bash $HERE/filterMatrix.sh $outDir/validation.cooccurrences $outDir/training.occurrences $outDir/training.cooccurrences $outDir/validation.cooccurrences.tmp
+bash $HERE/filterMatrix.sh $outDir/validation.cooccurrences $outDir/training.ids $outDir/training.cooccurrences $outDir/validation.cooccurrences.tmp
 mv $outDir/validation.cooccurrences.tmp $outDir/validation.cooccurrences
 
 
@@ -105,7 +115,7 @@ do
 	
 	bash $HERE/mergeMatrix_2keys.sh $tmpDir/testing/$testYear/cooccurrences $outDir/testing.$testYear.cooccurrences
 
-	bash $HERE/filterMatrix.sh $outDir/testing.$testYear.cooccurrences $outDir/trainingAndValidation.occurrences $outDir/tracking.cooccurrences $outDir/testing.$testYear.cooccurrences.tmp
+	bash $HERE/filterMatrix.sh $outDir/testing.$testYear.cooccurrences $outDir/trainingAndValidation.ids $outDir/tracking.cooccurrences $outDir/testing.$testYear.cooccurrences.tmp
 	mv $outDir/testing.$testYear.cooccurrences.tmp $outDir/testing.$testYear.cooccurrences
 
 	sort -R $outDir/testing.$testYear.cooccurrences | head -n $testSize | sort -k1,1n -k2,2n > $outDir/testing.$testYear.subset.$testSize.cooccurrences
@@ -122,5 +132,7 @@ done
 bash $HERE/mergeMatrix_2keys.sh "$outDir/testing.*" $outDir/testing.all.cooccurrences
 
 sort -R $outDir/testing.all.cooccurrences | head -n $testSize | sort -k1,1n -k2,2n > $outDir/testing.all.subset.$testSize.cooccurrences
-sort -R $outDir/validation.cooccurrences | head -n $validationSize | sort -k1,1n -k2,2n > $outDir/$outDir/validation.subset.$validationSize.cooccurrences
+sort -R $outDir/validation.cooccurrences | head -n $validationSize | sort -k1,1n -k2,2n > $outDir/validation.subset.$validationSize.cooccurrences
+
+rm -fr $tmpDir
 
