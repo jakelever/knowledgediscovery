@@ -23,6 +23,7 @@ Most of the analysis code is in Python and doesn't require compilation. Only the
 cd anniVectors
 make
 cd ../
+```
 
 ## Working Directory
 
