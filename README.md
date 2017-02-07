@@ -113,6 +113,15 @@ bash ../analysis/runSVD.sh --dimension `cat umlsWordlist.Final.txt | wc -l` --sv
 bash ../analysis/runSVD.sh --dimension `cat umlsWordlist.Final.txt | wc -l` --svNum 500 --matrix finalDataset/trainingAndValidation.cooccurrences --outU svd.trainingAndValidation.U --outV svd.trainingAndValidation.V --outSV svd.trainingAndValidation.SV --mirror --binarize
 ```
 
+We first need to calculate the class balance for the validation set
+
+```bash
+validation_termCount=`cat finalDataset/training.ids | wc -l`
+validation_knownCount=`cat finalDataset/training.cooccurrences | wc -l`
+validation_testCount=`cat finalDataset/validation.cooccurrences | wc -l`
+validation_classBalance=`echo "$validation_testCount / (($validation_termCount*($validation_termCount+1)/2) - $validation_knownCount)" | bc -l`
+```
+
 Now we need to test a range of singular values to find the optimal value
 
 ```bash
@@ -125,7 +134,7 @@ do
   
   python ../analysis/calcSVDScores.py --svdU svd.training.U --svdV svd.training.V --svdSV svd.training.SV --relationsToScore validation.negativeData --outFile scores.validation.negative.svd --sv $sv
   
-  python ../analysis/evaluate.py --positiveScores <(cut -f 3 scores.validation.positive.svd) --negativeScores <(cut -f 3 scores.validation.negative.svd) --classBalance $classBalance --analysisName "$sv" >> svd.results
+  python ../analysis/evaluate.py --positiveScores <(cut -f 3 scores.validation.positive.svd) --negativeScores <(cut -f 3 scores.validation.negative.svd) --classBalance $validation_classBalance --analysisName "$sv" >> svd.results
   
 done
 ```
@@ -161,27 +170,27 @@ python ../analysis/calcSVDScores.py --svdU svd.trainingAndValidation.U --svdV sv
 First we need to calculate the class balance.
 
 ```bash
-termCount=`cat finalDataset/training.ids | wc -l`
-knownCount=`cat finalDataset/training.cooccurrences | wc -l`
-testCount=`cat finalDataset/validation.cooccurrences | wc -l`
-classBalance=`echo "$testCount / (($termCount*($termCount+1)/2) - $knownCount)" | bc -l`
+testing_termCount=`cat finalDataset/trainingAndValidation.ids | wc -l`
+testing_knownCount=`cat finalDataset/trainingAndValidation.cooccurrences | wc -l`
+testing_testCount=`cat finalDataset/testing.all.cooccurrences | wc -l`
+testing_classBalance=`echo "$testing_testCount / (($testing_termCount*($testing_termCount+1)/2) - $testing_knownCount)" | bc -l`
 ```
 Then we run evaluate on the separate columns of the score file
 
 ```bash
-python ../analysis/evaluate.py --positiveScores <(cut -f 3 scores.testing.positive.svd) --negativeScores <(cut -f 3 scores.testing.negative.svd) --classBalance $classBalance --analysisName "SVD_$optimalSV" >> curves.all
+python ../analysis/evaluate.py --positiveScores <(cut -f 3 scores.testing.positive.svd) --negativeScores <(cut -f 3 scores.testing.negative.svd) --classBalance $testing_classBalance --analysisName "SVD_$optimalSV" >> curves.all
 
-python ../analysis/evaluate.py --positiveScores <(cut -f 3 scores.testing.positive) --negativeScores <(cut -f 3 scores.testing.negative) --classBalance $classBalance --analysisName factaPlus >> curves.all
+python ../analysis/evaluate.py --positiveScores <(cut -f 3 scores.testing.positive) --negativeScores <(cut -f 3 scores.testing.negative) --classBalance $testing_classBalance --analysisName factaPlus >> curves.all
 
-python ../analysis/evaluate.py --positiveScores <(cut -f 4 scores.testing.positive) --negativeScores <(cut -f 4 scores.testing.negative) --classBalance $classBalance --analysisName bitola >> curves.all
+python ../analysis/evaluate.py --positiveScores <(cut -f 4 scores.testing.positive) --negativeScores <(cut -f 4 scores.testing.negative) --classBalance $testing_classBalance --analysisName bitola >> curves.all
 
-python ../analysis/evaluate.py --positiveScores <(cut -f 5 scores.testing.positive) --negativeScores <(cut -f 5 scores.testing.negative) --classBalance $classBalance --analysisName anni >> curves.all
+python ../analysis/evaluate.py --positiveScores <(cut -f 5 scores.testing.positive) --negativeScores <(cut -f 5 scores.testing.negative) --classBalance $testing_classBalance --analysisName anni >> curves.all
 
-python ../analysis/evaluate.py --positiveScores <(cut -f 6 scores.testing.positive) --negativeScores <(cut -f 6 scores.testing.negative) --classBalance $classBalance --analysisName arrowsmith >> curves.all
+python ../analysis/evaluate.py --positiveScores <(cut -f 6 scores.testing.positive) --negativeScores <(cut -f 6 scores.testing.negative) --classBalance $testing_classBalance --analysisName arrowsmith >> curves.all
 
-python ../analysis/evaluate.py --positiveScores <(cut -f 7 scores.testing.positive) --negativeScores <(cut -f 7 scores.testing.negative) --classBalance $classBalance --analysisName jaccard >> curves.all
+python ../analysis/evaluate.py --positiveScores <(cut -f 7 scores.testing.positive) --negativeScores <(cut -f 7 scores.testing.negative) --classBalance $testing_classBalance --analysisName jaccard >> curves.all
 
-python ../analysis/evaluate.py --positiveScores <(cut -f 8 scores.testing.positive) --negativeScores <(cut -f 8 scores.testing.negative) --classBalance $classBalance --analysisName preferentialAttachment  >> curves.all
+python ../analysis/evaluate.py --positiveScores <(cut -f 8 scores.testing.positive) --negativeScores <(cut -f 8 scores.testing.negative) --classBalance $testing_classBalance --analysisName preferentialAttachment  >> curves.all
 ```
 
 Then we finally calculate the area under the precision recall curve for each method.
