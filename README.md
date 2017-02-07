@@ -78,6 +78,15 @@ bash ../combine_data/produceDataset.sh mined_and_separated/cooccurrences mined_a
 
 ## Generate negative data for comparison
 
+Next we'll create negative data to allow comparison of the different ranking methods.
+
+```bash
+python ../analysis/generateNegativeData.py --trueData <(cat finalDataset/training.cooccurrences finalDataset/validation.cooccurrences) --knownConceptIDs finalDataset/training.ids --num 1000 --outFile validation.negativeData
+
+python ../analysis/generateNegativeData.py --trueData <(cat finalDataset/trainingAndValidation.cooccurrences finalDataset/testing.all.cooccurrences) --knownConceptIDs finalDataset/trainingAndValidation.ids --num 1000 --outFile testing.negativeData
+
+```
+
 ## Calculate scores for positive & negative relationships
 
 ## Generate precision/recall curves for each method with associated statistics
