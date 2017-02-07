@@ -2,6 +2,7 @@
 set -e
 
 # Set up defaults
+mirror=NO
 binarize=NO
 logarithm=NO
 mutualinformation=NO
@@ -9,7 +10,7 @@ fillDiagonal=NO
 
 # Usage statement
 usage() {
-	echo "Usage: `basename $0` --dimension DIM --svNum SVNUM --matrix MATRIXFILE --outU OUTUFILE --outV OUTVFILE --outSV OUTSVFILE [--binarize] [--fillDiagonal] [--perfStats STATSFILE]"
+	echo "Usage: `basename $0` --dimension DIM --svNum SVNUM --matrix MATRIXFILE --outU OUTUFILE --outV OUTVFILE --outSV OUTSVFILE [--mirror] [--binarize] [--fillDiagonal] [--perfStats STATSFILE]"
 	echo
 	echo "This script runs an SVD decomposition of a square matrix using Graphlab Powergraph's implementation of SVD."
 	echo
@@ -20,6 +21,7 @@ usage() {
 	echo "  --outU OUTUFILE        : The path for the output U matrix file"
 	echo "  --outV OUTVFILE        : The path for the output V matrix file"
 	echo "  --outSV OUTSVFILE      : The path for the output singular values file"
+	echo "  --mirror               : Optional parameter to mirror the data before creating the matrix (default=$mirror)"
 	echo "  --binarize             : Optional parameter to binarize the matrix before performing SVD (default=$binarize)"
 	echo "  --logarithm            : Optional parameter to log(+1) the matrix before performing SVD (default=$logarithm)"
 	echo "  --mutualinformation            : Optional parameter to use mutual information of matrix before performing SVD (default=$mutualinformation)"
@@ -60,6 +62,9 @@ do
 		--outSV)
 		outSV="$2"
 		shift # past argument
+		;;
+		--mirror)
+		mirror=YES
 		;;
 		--binarize)
 		binarize=YES
@@ -136,6 +141,7 @@ echo " --matrix $matrix"
 echo " --outU $outU"
 echo " --outV $outV"
 echo " --outSV $outSV"
+echo " --mirror : $mirror"
 echo " --binarize : $binarize"
 echo " --logarithm : $logarithm"
 echo " --mutualinformation : $mutualinformation"
@@ -144,30 +150,36 @@ echo " --perfStats $perfStats"
 echo "------------------------"
 echo
 
-workingDir=graphlab_tmp
+workingDir=$PWD/graphlab_tmp
 mkdir -p $workingDir
 rm -fr $workingDir/*
 
 mkdir -p $workingDir/matrix
 
+if [[ "$mirror" == "YES" ]]; then
+	cat $matrix | awk ' { print $1"\t"$2"\t"$3; print $2"\t"$1"\t"$3; }' > $workingDir/tmpMatrix1
+else
+	ln -s `readlink -f $matrix` $workingDir/tmpMatrix1
+fi
+
 # Removing diagonals (and potentially put in a full "set" of diagonals)
 if [[ "$fillDiagonal" == "YES" ]]; then
-	cat $matrix | awk -v dimension=$dimension ' { if ($1!=$2) print $1"\t"$2"\t"$3; } END { for(i=0;i<dimension;i++) print i"\t"i"\t1"; } ' > $workingDir/tmpMatrix
+	cat $workingDir/tmpMatrix1 | awk -v dimension=$dimension ' { if ($1!=$2) print $1"\t"$2"\t"$3; } END { for(i=0;i<dimension;i++) print i"\t"i"\t1"; } ' > $workingDir/tmpMatrix2
 else
-	ln -s `readlink -f $matrix` $workingDir/tmpMatrix
+	ln -s $workingDir/tmpMatrix1 $workingDir/tmpMatrix2
 fi
 
 # Binarizing or logarithm the matrix?
 if [[ "$binarize" == "YES" ]]; then # Either binarize the matrix
-	cat $workingDir/tmpMatrix | awk ' { print $1"\t"$2"\t1"; } ' > $workingDir/matrix/matrixFile
+	cat $workingDir/tmpMatrix2 | awk ' { print $1"\t"$2"\t1"; } ' > $workingDir/matrix/matrixFile
 elif [[ "$logarithm" == "YES" ]]; then # Log the matrix
-	cat $workingDir/tmpMatrix | awk ' { print $1"\t"$2"\t"log($3+1); } ' > $workingDir/matrix/matrixFile
+	cat $workingDir/tmpMatrix2 | awk ' { print $1"\t"$2"\t"log($3+1); } ' > $workingDir/matrix/matrixFile
 elif [[ "$mutualinformation" == "YES" ]]; then # Log the matrix
-	cat $workingDir/tmpMatrix | awk ' { count[$1] = count[$1] + $3; } END { for (id in count) print id"\t"count[id]; }  ' > $workingDir/linkCounts
+	cat $workingDir/tmpMatrix2 | awk ' { count[$1] = count[$1] + $3; } END { for (id in count) print id"\t"count[id]; }  ' > $workingDir/linkCounts
 	#cat $workingDir/tmpMatrix | awk -v f=$workingDir/linkCounts ' BEGIN { while (getline < f) { counts[$1] = $2; } }  { val=$3/(counts[$1]+counts[$2]-$3); print $1"\t"$2"\t"val; } ' > $workingDir/matrix/matrixFile
-	cat $workingDir/tmpMatrix | awk -v f=$workingDir/linkCounts ' BEGIN { while (getline < f) { counts[$1] = $2; } }  { val=(1000000*$3)/(counts[$1]+counts[$2]-$3); printf "%d\t%d\t%f\n",$1,$2,val; } ' > $workingDir/matrix/matrixFile
+	cat $workingDir/tmpMatrix2 | awk -v f=$workingDir/linkCounts ' BEGIN { while (getline < f) { counts[$1] = $2; } }  { val=(1000000*$3)/(counts[$1]+counts[$2]-$3); printf "%d\t%d\t%f\n",$1,$2,val; } ' > $workingDir/matrix/matrixFile
 else
-	ln -s `readlink -f $workingDir/tmpMatrix` $workingDir/matrix/matrixFile
+	ln -s `readlink -f $workingDir/tmpMatrix2` $workingDir/matrix/matrixFile
 fi
 TARGET=$workingDir/matrix
 LOG=$workingDir/log
