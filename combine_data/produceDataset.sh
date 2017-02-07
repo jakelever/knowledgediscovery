@@ -122,5 +122,5 @@ done
 bash $HERE/mergeMatrix_2keys.sh "$outDir/testing.*" $outDir/testing.all.cooccurrences
 
 sort -R $outDir/testing.all.cooccurrences | head -n $testSize | sort -k1,1n -k2,2n > $outDir/testing.all.subset.$testSize.cooccurrences
-sort -R $outDir/$outDir/validation.cooccurrences | head -n $validationSize | sort -k1,1n -k2,2n > $outDir/$outDir/validation.subset.$validationSize.cooccurrences
+sort -R $outDir/validation.cooccurrences | head -n $validationSize | sort -k1,1n -k2,2n > $outDir/$outDir/validation.subset.$validationSize.cooccurrences
 
