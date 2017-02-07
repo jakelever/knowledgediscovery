@@ -66,6 +66,12 @@ We first need to extract the cooccurrences, occurrences and sentence counts from
 bash ../data/splitDataTypes.sh mined mined_and_separated
 ```
 
+Next up we merged these various cooccurrence, occurrence and sentence count files down into the final data set
+
+```bash
+bash ../data/produceDataset.sh mined_and_separated/cooccurrences mined_and_separated/occurrences mined_and_separated/sentencecount 2010 finalDataset
+```
+
 ## Generate ANNI Vectors
 
 ## Run Singular Value Decomposition
