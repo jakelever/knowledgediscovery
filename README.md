@@ -151,3 +151,24 @@ knownCount=`cat finalDataset/training.cooccurrences | wc -l`
 testCount=`cat finalDataset/validation.cooccurrences | wc -l`
 classBalance=`echo "$testCount / (($termCount*($termCount+1)/2) - $knownCount)" | bc -l`
 ```
+Then we run evaluate on the separate columns of the score file
+
+```bash
+python ../analysis/evaluate.py --positiveScores <(cut -f 3 scores.validation.positive) --negativeScores <(cut -f 3 scores.validation.negative) --classBalance $classBalance --analysisName factaPlus >> curves.rest
+
+python ../analysis/evaluate.py --positiveScores <(cut -f 4 scores.validation.positive) --negativeScores <(cut -f 4 scores.validation.negative) --classBalance $classBalance --analysisName bitola >> curves.rest
+
+python ../analysis/evaluate.py --positiveScores <(cut -f 5 scores.validation.positive) --negativeScores <(cut -f 5 scores.validation.negative) --classBalance $classBalance --analysisName anni >> curves.rest
+
+python ../analysis/evaluate.py --positiveScores <(cut -f 6 scores.validation.positive) --negativeScores <(cut -f 6 scores.validation.negative) --classBalance $classBalance --analysisName arrowsmith >> curves.rest
+
+python ../analysis/evaluate.py --positiveScores <(cut -f 7 scores.validation.positive) --negativeScores <(cut -f 7 scores.validation.negative) --classBalance $classBalance --analysisName jaccard >> curves.rest
+
+python ../analysis/evaluate.py --positiveScores <(cut -f 8 scores.validation.positive) --negativeScores <(cut -f 8 scores.validation.negative) --classBalance $classBalance --analysisName preferentialAttachment  >> curves.rest
+```
+
+Then we finally calculate the area under the precision recall curve for each method.
+
+```bash
+/gsc/software/linux-x86_64/python-2.7.5/bin/python ../analysis/statsCalculator.py --evaluationFile scores.rest
+```
