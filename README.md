@@ -82,6 +82,17 @@ ANNI requires creating concept vectors for all concepts
 ../anniVectors/generateAnniVectors --cooccurrenceData finalDataset/trainingAndValidation.cooccurrences --occurrenceData finalDataset/trainingAndValidation.occurrences --sentenceCount `cat finalDataset/trainingAndValidation.sentenceCounts` --vectorsToCalculate finalDataset/trainingAndValidation.ids --outIndexFile anni.trainingAndValidation.index --outVectorFile anni.trainingAndValidation.vectors
 ```
 
+## Generate negative data for comparison
+
+Next we'll create negative data to allow comparison of the different ranking methods.
+
+```bash
+python ../analysis/generateNegativeData.py --trueData <(cat finalDataset/training.cooccurrences finalDataset/validation.cooccurrences) --knownConceptIDs finalDataset/training.ids --num 1000 --outFile validation.negativeData
+
+python ../analysis/generateNegativeData.py --trueData <(cat finalDataset/trainingAndValidation.cooccurrences finalDataset/testing.all.cooccurrences) --knownConceptIDs finalDataset/trainingAndValidation.ids --num 1000 --outFile testing.negativeData
+
+```
+
 ## Run Singular Value Decomposition
 
 We'll run a singular value decomposition on the co-occurrence data.
@@ -92,16 +103,12 @@ bash ../analysis/runSVD.sh --dimension `cat umlsWordlist.Final.txt | wc -l` --sv
 bash ../analysis/runSVD.sh --dimension `cat umlsWordlist.Final.txt | wc -l` --svNum 500 --matrix finalDataset/trainingAndValidation.cooccurrences --outU svd.trainingAndValidation.U --outV svd.trainingAndValidation.V --outSV svd.trainingAndValidation.SV --mirror
 ```
 
-
-## Generate negative data for comparison
-
-Next we'll create negative data to allow comparison of the different ranking methods.
+Now we need to test a range of singular values to find the optimal value
 
 ```bash
-python ../analysis/generateNegativeData.py --trueData <(cat finalDataset/training.cooccurrences finalDataset/validation.cooccurrences) --knownConceptIDs finalDataset/training.ids --num 1000 --outFile validation.negativeData
+python ../analysis/calcSVDScores.py --svdU svd.training.U --svdV svd.training.V --svdSV svd.training.SV --relationsToScore finalDataset/validation.cooccurrences --outFile scores.validation.positive.svd --sv 50
 
-python ../analysis/generateNegativeData.py --trueData <(cat finalDataset/trainingAndValidation.cooccurrences finalDataset/testing.all.cooccurrences) --knownConceptIDs finalDataset/trainingAndValidation.ids --num 1000 --outFile testing.negativeData
-
+python ../analysis/calcSVDScores.py --svdU svd.training.U --svdV svd.training.V --svdSV svd.training.SV --relationsToScore validation.negativeData --outFile scores.validation.negative.svd --sv 50
 ```
 
 ## Calculate scores for positive & negative relationships
