@@ -106,4 +106,11 @@ python ../analysis/generateNegativeData.py --trueData <(cat finalDataset/trainin
 
 ## Calculate scores for positive & negative relationships
 
+```bash
+python ../analysis/ScoreImplicitRelations.py --cooccurrenceFile finalDataset/training.cooccurrences --occurrenceFile finalDataset/training.occurrences --sentenceCount finalDataset/training.sentenceCounts --relationsToScore finalDataset/validation.cooccurrences --anniVectors anni.training.vectors --anniVectorsIndex anni.training.index --outFile scores.training
+
+python ../analysis/ScoreImplicitRelations.py --cooccurrenceFile finalDataset/trainingAndValidation.cooccurrences --occurrenceFile finalDataset/trainingAndValidation.occurrences --sentenceCount finalDataset/trainingAndValidation.sentenceCounts --relationsToScore finalDataset/testing.all.cooccurrences --anniVectors anni.trainingAndValidation.vectors --anniVectorsIndex anni.trainingAndValidation.index --outFile testing.all.training
+
+```
+
 ## Generate precision/recall curves for each method with associated statistics
