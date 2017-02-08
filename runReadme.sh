@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "set -ex" > README.sh
-cat README.md | awk ' { if ($0=="```") code=0; if (code==1) print; if ($0=="```bash") code=1;}' >> README.sh
+cat README.md | awk -F '' ' { if ($0=="```") code=0; if (code==1 || $1 == "#") print $0"\n"; if ($0=="```bash") code=1;}' >> README.sh
 
 bash README.sh
 
