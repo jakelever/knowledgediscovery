@@ -198,3 +198,11 @@ Then we finally calculate the area under the precision recall curve for each met
 ```bash
 /gsc/software/linux-x86_64/python-2.7.5/bin/python ../analysis/statsCalculator.py --evaluationFile curves.all > curves.stats
 ```
+
+## Plot Figures
+
+Lastly we plot the figures used in the paper. The first is a comparison of the different methods.
+
+```bash
+/gsc/software/linux-x86_64-centos5/R-3.0.2/bin/Rscript ../plots/comparison.R curves.stats comparison.tiff
+```
