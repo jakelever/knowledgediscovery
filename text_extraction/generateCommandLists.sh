@@ -1,6 +1,9 @@
 #!/bin/bash
 set -ex
 
+medlineAndPMCDir=$1
+medlineAndPMCDir=`readlink -f $medlineAndPMCDir`
+
 python=/gsc/software/linux-x86_64/python-2.7.2/bin/python
 #python=/gsc/software/linux-x86_64-centos6/python-2.7.8/bin/python
 #cooccurrenceMajigger=/projects/jlever/megaTextProject/nounphrasePipeline/cooccurrenceMajigger/cooccurrenceMajigger_articleCode.py
@@ -14,8 +17,8 @@ cooccurrenceMajigger=`readlink -f $cooccurrenceMajigger`
 wordlist=`readlink -f $wordlist`
 
 # Set the directories containing the MEDLINE files and the article lists
-filteredMedlineDir=/projects/bioracle/ncbiData/2017/filteredMedline/
-articleListDir=/projects/bioracle/ncbiData/2017/articleLists
+filteredMedlineDir=$medlineAndPMCDir/filteredMedline/
+articleListDir=$medlineAndPMCDir/articleLists
 
 mkdir -p $HERE/mined/abstracts
 mkdir -p $HERE/mined/articles
