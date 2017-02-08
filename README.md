@@ -76,7 +76,7 @@ python ../text_extraction/cooccurrenceMajigger.py --termsWithSynonymsFile umlsWo
 First we generate a list of commands to parse all the text files. This is for use on a cluster.
 
 ```bash
-bash ../text_extraction/generateCommandLists.sh
+bash ../text_extraction/generateCommandLists.sh medlineAndPMC
 ```
 
 ## Combine data into a dataset for analysis
