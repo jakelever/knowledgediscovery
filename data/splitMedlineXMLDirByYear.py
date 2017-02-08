@@ -4,6 +4,8 @@ import argparse
 import os.path
 from collections import Counter
 import traceback
+from datetime import date
+import re
 
 # It's the main bit. Yay!
 if __name__ == "__main__":
@@ -84,9 +86,14 @@ if __name__ == "__main__":
 					if len(yearFields) > 0:
 						year = yearFields[0].text
 					if len(medlineDateFields) > 0:
-						year = medlineDateFields[0].text[0:4]
+						#year = medlineDateFields[0].text[0:4]
+						yearSearch = re.search('([0-9]{4})', medlineDateFields[0].text)
+						assert yearSearch, "Couldn't find 4 digit year in text: %s"  % medlineDateFields[0].text
+						year = yearSearch.group(1)
 					
 					year = int(year)
+
+					assert year >= 1800 and year <= date.today().year, "Publication year (%d) must be between 1800 and this year" % year
 					
 					# Let's get the appropriate file handle
 					handle = None
