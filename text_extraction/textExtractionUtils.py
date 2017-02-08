@@ -383,7 +383,7 @@ def loadWordlistFile(wordlistPath, stopwordsFile, removeShortwords, binaryTermsF
 	
 	# Load the word-list directly from a pickled file
 	if binaryTermsFile:
-		print "Loading idLookup from binary file:", binaryTermsFile.name
+		print "Loading wordlist from binary file:", binaryTermsFile.name
 		wordlist = pickle.load(binaryTermsFile)
 		print "Load complete."
 	# Load a word-list from a file if needed
@@ -425,7 +425,7 @@ def loadWordlistFile(wordlistPath, stopwordsFile, removeShortwords, binaryTermsF
 
 	# Or save it to a pickled file
 	if binaryTermsFile_out:
-		print "Saving idLookup to binary file:", binaryTermsFile_out.name
+		print "Saving word list to binary file:", binaryTermsFile_out.name
 		pickle.dump(wordlist, binaryTermsFile_out)
 		print "Save complete."
 		

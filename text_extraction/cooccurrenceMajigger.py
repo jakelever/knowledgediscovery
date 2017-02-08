@@ -30,7 +30,7 @@ def extractTermCoOccurrences_OneList(outFile, textInput, textSourceInfo):
 			tokens = tokenize(sentence)
 			
 			# Get the IDs of terms found in the sentence
-			termIDs = getID_FromLongestTerm(tokens, idLookup1)
+			termIDs = getID_FromLongestTerm(tokens, mainWordlist)
 			
 			#print "-------------------------"
 			#print sentence
@@ -119,7 +119,7 @@ if __name__ == "__main__":
 	loadParsingTools()
 	
 	# Dictionary to contain terms->IDs from a word-list
-	idLookup1 = loadWordlistFile(wordlistPath, args.stopwordsFile, args.removeShortwords, args.binaryTermsFile, args.binaryTermsFile_out)
+	mainWordlist = loadWordlistFile(wordlistPath, args.stopwordsFile, args.removeShortwords, args.binaryTermsFile, args.binaryTermsFile_out)
 		
 	startTime = time.time()
 
