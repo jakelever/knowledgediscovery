@@ -3,6 +3,7 @@ import xml.etree.ElementTree as etree
 import argparse
 import os.path
 from collections import Counter
+import traceback
 
 # It's the main bit. Yay!
 if __name__ == "__main__":
@@ -108,6 +109,8 @@ if __name__ == "__main__":
 				except:
 					pmid = elem.findall('./PMID')[0].text
 					print "ERROR at: "+basename+"\t"+pmid
+					print(traceback.format_exc())
+					print(sys.exc_info()[0])
 					sys.exit(255)
 					
 				elem.clear()
