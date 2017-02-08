@@ -32,6 +32,10 @@ class LingPipe:
 
 	def __del__(self):
 		self.process.stdin.close()
+		slippage = False
 		for line in self.process.stdout:
+			print "UNEXPECTED DATA:", line.strip()
+			slippage = True
+		if slippage:
 			raise Exception('Lingpipe slippage occurred. Receiving additional Lingpipe data when none expected')
 	
