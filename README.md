@@ -81,6 +81,12 @@ First we generate a list of commands to parse all the text files. This is for us
 bash ../text_extraction/generateCommandLists.sh medlineAndPMC
 ```
 
+Next we need to run the text mining tool on a cluster. This may need editing for your partocular environment.
+
+```bash
+bash ../text_extraction/runCommandsOnCluster.sh commands_all.txt
+```
+
 ## Combine data into a dataset for analysis
 
 We first need to extract the cooccurrences, occurrences and sentence counts from the mined data (as they're all combined in the same output files)
