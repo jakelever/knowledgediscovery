@@ -51,7 +51,18 @@ This involves downloading UMLS from https://www.nlm.nih.gov/research/umls/licens
 A script will pull out the necessary terms, their IDs, semantic types and synonyms from the UMLS RRF files.
 
 ```bash
-bash ../data/generateUMLSWordlist.sh /projects/bioracle/ncbiData/umls/2016AB/META/ workingDir/
+bash ../data/generateUMLSWordlist.sh /projects/bioracle/ncbiData/umls/2016AB/META/ ./
+```
+
+TEMPORARY: We'll do a little simplification for the testing process. Basically we going to build a mini word-list
+
+```bash
+mv umlsWordlist.WithIDs.txt fullWordlist.WithIDs.txt
+rm umlsWordlist.Final.txt
+
+echo -e "cancer\ninib\nanib" > simpler_terms.txt
+grep -f simpler_terms.txt fullWordlist.WithIDs.txt > umlsWordlist.WithIDs.txt
+cut -f 3 -d $'\t' umlsWordlist.WithIDs.txt > umlsWordlist.Final.txt
 ```
 
 We then need to process this wordlist into a Python pickled file and remove stop-words and short words.
