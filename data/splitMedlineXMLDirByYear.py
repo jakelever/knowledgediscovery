@@ -113,6 +113,7 @@ if __name__ == "__main__":
 						handle.write(header)
 					
 					handle.write(etree.tostring(elem).strip() + "\n")
+					citation_counts[year] += 1
 				except:
 					pmid = elem.findall('./PMID')[0].text
 					print "ERROR at: "+basename+"\t"+pmid
