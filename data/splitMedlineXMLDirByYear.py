@@ -101,6 +101,7 @@ if __name__ == "__main__":
 						handles[year].write(footer)
 						handles[year].close()
 						file_counts[year] += 1
+						citations_counts[year] = 0
 
 
 					if year in handles:
