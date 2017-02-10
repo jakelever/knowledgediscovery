@@ -100,6 +100,8 @@ if __name__ == "__main__":
 					if citation_counts[year] > MAX_PER_FILE:
 						handles[year].write(footer)
 						handles[year].close()
+						del handles[year]
+
 						file_counts[year] += 1
 						citation_counts[year] = 0
 
