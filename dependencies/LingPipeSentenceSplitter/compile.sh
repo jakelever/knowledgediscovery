@@ -10,5 +10,6 @@ if [[ $lingpipeSearchCount -eq 0 ]]; then
 	exit 255
 fi
 
-javac -classpath $CLASSPATH LingpipeSentenceSplitter.java
+version=1.6
+javac -target $version -source $version -classpath $CLASSPATH LingpipeSentenceSplitter.java
 
