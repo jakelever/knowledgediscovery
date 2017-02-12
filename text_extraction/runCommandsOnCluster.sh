@@ -37,8 +37,6 @@ do
 #break
 done
 
-exit 0
-
 while true
 do
 	jobList=`cat jobNumbers | sort -un | tr '\n' ',' | sed -e 's/,$//'`
