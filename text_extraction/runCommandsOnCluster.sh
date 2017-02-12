@@ -41,7 +41,9 @@ while true
 do
 	jobList=`cat jobNumbers | sort -un | tr '\n' ',' | sed -e 's/,$//'`
 	command="$clusterStatCommand -j $jobList"
-	ssh $clusterHeadNode "$command" > retVal2 2>&1
+
+	# Check the status of jobs (and ignore failure)
+	ssh $clusterHeadNode "$command" > retVal2 2>&1 | true
 	
 	if grep --silent "$noJobsString" retVal2; then
 		echo "All jobs finished"
