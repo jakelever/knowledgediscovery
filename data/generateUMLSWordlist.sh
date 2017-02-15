@@ -49,6 +49,9 @@ fi
 mkdir -p $outDir
 cd $outDir
 
+# Do some cleanup just in case
+rm -f SemGroups.txt SemGroups.filtered.txt SemGroups.filtered.ids.txt
+
 # Download the semantic groups file
 wget https://semanticnetwork.nlm.nih.gov/download/SemGroups.txt
 
@@ -76,9 +79,7 @@ python=/gsc/software/linux-x86_64/python-2.7.2/bin/python
 $python $HERE/helper_generateUMLSWordlist.py --selectedTypeIDs $semanticTypeIDs --umlsConceptFile $umlsDir/MRCONSO.RRF --umlsSemanticTypesFile $umlsDir/MRSTY.RRF --outWordlistFile $outDir/umlsWordlist.WithIDs.txt
 
 # To avoid confusion, let's clean up a bit
-rm SemGroups.txt
-rm SemGroups.filtered.txt
-rm SemGroups.filtered.ids.txt
+rm -f SemGroups.txt SemGroups.filtered.txt SemGroups.filtered.ids.txt
 
 # Sort the umlsWordlist (which will be by the CUIDs in the first column)
 sort $outDir/umlsWordlist.WithIDs.txt > $outDir/umlsWordlist.WithIDs.tmp
