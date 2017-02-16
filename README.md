@@ -166,6 +166,13 @@ sort -k3,3n curves.svd | tail -n 1 | cut -f 1 > parameters.sv
 optimalSV=`cat parameters.sv`
 ```
 
+We'll also calculate the optimal threshold which is useful later. We won't use a threshold to compare the different methods (as we're using the Area under the Precision Recall curve). But we will want to use a threshold to call positive/negatives later in our analysis. The threshold is calculated as the value that gives the optimal F1-score. So we sort by F1-score and pull out the associated threshold.
+
+```bash
+grep -P "^$optimalSV\t" svd.results | sort -k5,5n | cut -f 10 -d $'\t' | tail -n 1 > parameters.threshold
+optimalThreshold=`cat parameters.threshold`
+```
+
 ## Calculate scores for positive & negative relationships
 
 For positive and negative
@@ -224,4 +231,9 @@ Lastly we plot the figures used in the paper. The first is a comparison of the d
 
 ```bash
 /gsc/software/linux-x86_64-centos5/R-3.0.2/bin/Rscript ../plots/comparison.R curves.stats comparison.tiff
+```
+
+The next is a comparison shown as Precision-Recall curves
+```bash
+/gsc/software/linux-x86_64-centos5/R-3.0.2/bin/Rscript ../plots/PRcurves.R curves.all PRcurve.tiff
 ```
