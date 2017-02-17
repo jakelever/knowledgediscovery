@@ -8,8 +8,13 @@ if __name__ == '__main__':
 	parser.add_argument('--svdSV',required=True,type=str,help='SV component of SVD decomposition')
 	parser.add_argument('--relationsToScore',required=True,type=str,help='Relations to calculate scores for')
 	parser.add_argument('--sv',required=True,type=int,help='Number of singular values to use from SVD')
+	parser.add_argument('--threshold',type=float,help='Optional argument to only output scores that are greater than a threshold')
 	parser.add_argument('--outFile',required=True,type=str,help='Path to output file')
 	args = parser.parse_args()
+
+	threshold = None
+	if args.threshold:
+		threshold = args.threshold
 
 	print "Loading SVD U"
 	svdU = np.loadtxt(args.svdU)
@@ -60,9 +65,10 @@ if __name__ == '__main__':
 			xIndex = svdU_lookup[x]
 			yIndex = svdV_lookup[y]
 			score = np.dot(svdU[xIndex,:],svdV[:,yIndex])
-			line = "%d\t%d\t%f\n" % (x,y,score)
-			#print line
-			outF.write(line)
+			if threshold is None or score > threshold:
+				line = "%d\t%d\t%f\n" % (x,y,score)
+				#print line
+				outF.write(line)
 
 	print "Scoring complete"
 	print "Written to %s" % args.outFile
