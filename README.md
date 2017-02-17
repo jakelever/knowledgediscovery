@@ -255,6 +255,7 @@ Lastly we plot the figures used in the paper. The first is a comparison of the d
 ```
 
 The next is a comparison shown as Precision-Recall curves
+
 ```bash
 /gsc/software/linux-x86_64-centos5/R-3.0.2/bin/Rscript ../plots/PRcurves.R curves.all PRcurve.tiff
 ```
@@ -262,6 +263,10 @@ The next is a comparison shown as Precision-Recall curves
 The next is violin plots comparing the different methods
 
 The next is an analysis of the years after the split year
+
+```bash
+/gsc/software/linux-x86_64-centos5/R-3.0.2/bin/Rscript ../plots/yearByYear.R yearByYear.results yearByYear.tiff
+```
 
 ## Make Predictions for Alzheimer's and Parkinson's Disease
 
