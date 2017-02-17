@@ -226,6 +226,26 @@ Then we finally calculate the area under the precision recall curve for each met
 /gsc/software/linux-x86_64/python-2.7.5/bin/python ../analysis/statsCalculator.py --evaluationFile curves.all > curves.stats
 ```
 
+## Calculate Predictions for Following Years
+
+Insert explanation here
+
+```bash
+rm -f yearByYear.results
+for testFile in `find finalDataset/ -name 'testing*subset*' | grep -v all`
+do
+  testYear=`basename $testFile | cut -f 2 -d '.'`
+
+  cooccurrenceCount=`cat $testFile | wc -l`
+
+  python ../analysis/calcSVDScores.py --svdU svd.trainingAndValidation.U --svdV svd.trainingAndValidation.V --svdSV svd.trainingAndValidation.SV --relationsToScore $testFile --sv $optimalSV --threshold $optimalThreshold --outFile tmpPredictions
+  
+  predictionCount=`cat tmpPredictions | wc -l`
+  
+  echo -e "$testYear\t$cooccurrenceCount\t$predictionCount" >> yearByYear.results
+done
+```
+
 ## Plot Figures
 
 Lastly we plot the figures used in the paper. The first is a comparison of the different methods.
