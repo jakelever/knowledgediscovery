@@ -232,7 +232,7 @@ Insert explanation here
 
 ```bash
 rm -f yearByYear.results
-for testFile in `find finalDataset/ -name 'testing*subset*' | grep -v all`
+for testFile in `find finalDataset/ -name 'testing*subset*' | grep -v all | sort`
 do
   testYear=`basename $testFile | cut -f 2 -d '.'`
 
