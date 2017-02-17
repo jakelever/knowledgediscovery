@@ -256,3 +256,11 @@ The next is a comparison shown as Precision-Recall curves
 ```bash
 /gsc/software/linux-x86_64-centos5/R-3.0.2/bin/Rscript ../plots/PRcurves.R curves.all PRcurve.tiff
 ```
+
+The next is violin plots comparing the different methods
+
+The next is an analysis of the years after the split year
+
+## Make Predictions for Alzheimer's and Parkinson's Disease
+
+Lastly we'll output predictions for Alzheimer's and Parkinson's.
