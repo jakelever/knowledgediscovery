@@ -231,16 +231,18 @@ Then we finally calculate the area under the precision recall curve for each met
 Insert explanation here
 
 ```bash
-mkdir yearByYear
-for testFile in `find finalDataset/ -name 'testing*subset*' | grep -v all | sort`
+rm -f yearByYear.results
+for testFile in `find finalDataset/ -name 'testing*subset*' | grep -v all`
 do
-
   testYear=`basename $testFile | cut -f 2 -d '.'`
 
-  python ../analysis/calcSVDScores.py --svdU svd.trainingAndValidation.U --svdV svd.trainingAndValidation.V --svdSV svd.trainingAndValidation.SV --relationsToScore $testFile --sv $optimalSV --outFile yearByYear/$testYear.svd
+  cooccurrenceCount=`cat $testFile | wc -l`
 
-  python ../analysis/ScoreImplicitRelations.py --cooccurrenceFile finalDataset/trainingAndValidation.cooccurrences --occurrenceFile finalDataset/trainingAndValidation.occurrences --sentenceCount finalDataset/trainingAndValidation.sentenceCounts --relationsToScore $testFile --anniVectors anni.trainingAndValidation.vectors --anniVectorsIndex anni.trainingAndValidation.index --outFile yearByYear/$testYear.other
+  python ../analysis/calcSVDScores.py --svdU svd.trainingAndValidation.U --svdV svd.trainingAndValidation.V --svdSV svd.trainingAndValidation.SV --relationsToScore $testFile --sv $optimalSV --threshold $optimalThreshold --outFile tmpPredictions
 
+  predictionCount=`cat tmpPredictions | wc -l`
+
+  echo -e "$testYear\t$cooccurrenceCount\t$predictionCount" >> yearByYear.results
 done
 ```
 
