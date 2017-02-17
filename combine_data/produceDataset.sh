@@ -56,6 +56,8 @@ cat $outDir/trainingAndValidation.cooccurrences | cut -f 1,2 -d $'\t' | tr '\t' 
 bash $HERE/filterOccurrences.sh $outDir/trainingAndValidation.occurrences.unfiltered $outDir/trainingAndValidation.ids $outDir/trainingAndValidation.occurrences
 rm $outDir/trainingAndValidation.occurrences.unfiltered
 
+python $HERE/checkFilteredOccurrences.py --occurrenceFile $outDir/trainingAndValidation.occurrences --acceptedIDs $outDir/trainingAndValidation.ids
+
 #############
 # Training  #
 #############
@@ -84,6 +86,8 @@ cat $outDir/training.cooccurrences | cut -f 1,2 -d $'\t' | tr '\t' '\n' | sort -
 bash $HERE/filterOccurrences.sh $outDir/training.occurrences.unfiltered $outDir/training.ids $outDir/training.occurrences
 rm $outDir/training.occurrences.unfiltered
 
+python $HERE/checkFilteredOccurrences.py --occurrenceFile $outDir/training.occurrences --acceptedIDs $outDir/training.ids
+
 ##############
 # Validation #
 ##############
@@ -97,6 +101,7 @@ bash $HERE/mergeMatrix_2keys.sh $tmpDir/validation/$splitYear/cooccurrences $out
 bash $HERE/filterMatrix.sh $outDir/validation.cooccurrences $outDir/training.ids $outDir/training.cooccurrences $outDir/validation.cooccurrences.tmp
 mv $outDir/validation.cooccurrences.tmp $outDir/validation.cooccurrences
 
+python $HERE/checkFilteredCooccurrences.py --cooccurrenceFile $outDir/validation.cooccurrences --acceptedIDs $outDir/training.ids --previousCooccurrences $outDir/training.cooccurrences
 
 ########
 # Test #
@@ -117,6 +122,8 @@ do
 
 	bash $HERE/filterMatrix.sh $outDir/testing.$testYear.cooccurrences $outDir/trainingAndValidation.ids $outDir/tracking.cooccurrences $outDir/testing.$testYear.cooccurrences.tmp
 	mv $outDir/testing.$testYear.cooccurrences.tmp $outDir/testing.$testYear.cooccurrences
+
+	python $HERE/checkFilteredCooccurrences.py --cooccurrenceFile $outDir/testing.$testYear.cooccurrences --acceptedIDs $outDir/trainingAndValidation.ids --previousCooccurrences $outDir/tracking.cooccurrences
 
 	sort -R $outDir/testing.$testYear.cooccurrences | head -n $testSize | sort -k1,1n -k2,2n > $outDir/testing.$testYear.subset.$testSize.cooccurrences
 
