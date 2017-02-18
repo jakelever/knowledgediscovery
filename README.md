@@ -290,11 +290,16 @@ mv ids.drugs.txt.filtered ids.drugs.txt
 
 # Start calculating scores
 python ../analysis/calcSVDScores.py --svdU svd.trainingAndValidation.U --svdV svd.trainingAndValidation.V --svdSV svd.trainingAndValidation.SV --idsFileA ids.alzheimers.txt --idsFileB ids.drugs.txt --sv $optimalSV --threshold $optimalThreshold --outFile predictions.alzheimers.txt
-sort -k3,3n predictions.alzheimers.txt > predictions.alzheimers.txt.sorted
+sort -k3,3gr predictions.alzheimers.txt > predictions.alzheimers.txt.sorted
 mv predictions.alzheimers.txt.sorted predictions.alzheimers.txt
 
 python ../analysis/calcSVDScores.py --svdU svd.trainingAndValidation.U --svdV svd.trainingAndValidation.V --svdSV svd.trainingAndValidation.SV --idsFileA ids.parkinsons.txt --idsFileB ids.drugs.txt --sv $optimalSV --threshold $optimalThreshold --outFile predictions.parkinsons.txt
-sort -k3,3n predictions.parkinsons.txt > predictions.parkinsons.txt.sorted
+sort -k3,3gr predictions.parkinsons.txt > predictions.parkinsons.txt.sorted
 mv predictions.parkinsons.txt.sorted predictions.parkinsons.txt
+
+# Lastly get the actual terms out of the file for the predictions
+cat predictions.alzheimers.txt | awk -v f=umlsWordlist.WithIDs.txt ' BEGIN { x=0; while (getline < f) dict[x++] = $0; } { print $0"\t"dict[$2]; } ' > predictions.alzheimers.withterms.txt
+cat predictions.parkinsons.txt | awk -v f=umlsWordlist.WithIDs.txt ' BEGIN { x=0; while (getline < f) dict[x++] = $0; } { print $0"\t"dict[$2]; } ' > predictions.parkinsons.withterms.txt
+
 ```
 
