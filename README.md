@@ -62,8 +62,7 @@ TEMPORARY: We'll do a little simplification for the testing process. Basically w
 mv umlsWordlist.WithIDs.txt fullWordlist.WithIDs.txt
 rm umlsWordlist.Final.txt
 
-echo -e "cancer\ninib\nanib" > simpler_terms.txt
-grep -f simpler_terms.txt fullWordlist.WithIDs.txt > umlsWordlist.WithIDs.txt
+grep -f ../data/miniset.cuids fullWordlist.WithIDs.txt > umlsWordlist.WithIDs.txt
 cut -f 3 -d $'\t' umlsWordlist.WithIDs.txt > umlsWordlist.Final.txt
 ```
 
