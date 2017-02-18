@@ -1,4 +1,5 @@
 import argparse
+import itertools
 import numpy as np
 
 if __name__ == '__main__':
@@ -6,7 +7,9 @@ if __name__ == '__main__':
 	parser.add_argument('--svdU',required=True,type=str,help='U component of SVD decomposition')
 	parser.add_argument('--svdV',required=True,type=str,help='V component of SVD decomposition')
 	parser.add_argument('--svdSV',required=True,type=str,help='SV component of SVD decomposition')
-	parser.add_argument('--relationsToScore',required=True,type=str,help='Relations to calculate scores for')
+	parser.add_argument('--relationsToScore',type=str,help='Relations to calculate scores for')
+	parser.add_argument('--idsFileA',type=str,help='File 1 containing IDs to check')
+	parser.add_argument('--idsFileB',type=str,help='File 2 containing IDs to check')
 	parser.add_argument('--sv',required=True,type=int,help='Number of singular values to use from SVD')
 	parser.add_argument('--threshold',type=float,help='Optional argument to only output scores that are greater than a threshold')
 	parser.add_argument('--outFile',required=True,type=str,help='Path to output file')
@@ -48,22 +51,37 @@ if __name__ == '__main__':
 	svdV = np.dot(np.diag(svdSV),svdV.T)
 	print "svdV.shape = ", svdV.shape
 
-	print "Loading relations to score..."
-	relationsToScore = set()
-	with open(args.relationsToScore) as f:
-		for line in f:
-			x,y = line.strip().split()[0:2]
-			x,y = int(x),int(y)
-			if x > y:
-				x,y = y,x
-			relationsToScore.add((x,y))
-	relationsToScore = sorted(list(relationsToScore))
+	if args.relationsToScore:
+		print "Loading relations to score..."
+		relationsToScore = set()
+		with open(args.relationsToScore) as f:
+			for line in f:
+				x,y = line.strip().split()[0:2]
+				x,y = int(x),int(y)
+				if x > y:
+					x,y = y,x
+				relationsToScore.add((x,y))
+		relationsToScore = sorted(list(relationsToScore))
+		iterator = relationsToScore
+	elif args.idsFileA and args.idsFileB:
+		print "Loading IDs for scoring..."
+		with open(args.idsFileA) as f:
+			idsA = [ int(line.strip()) for line in f ]
+		with open(args.idsFileB) as f:
+			idsB = [ int(line.strip()) for line in f ]
+		idsA = sorted(list(set(idsA)))
+		idsB = sorted(list(set(idsB)))
+		iterator = itertools.product(idsA,idsB)
+	else:
+		raise RuntimeError('Must either supply --relationsToScore or (--idsFileA and --idsFileA)')
 
 	print "Calculating scores..."
 	with open(args.outFile,'w') as outF:
-		for x,y in relationsToScore:
-			xIndex = svdU_lookup[x]
-			yIndex = svdV_lookup[y]
+		for x,y in iterator:
+			# We only reconstruct one triangle of the matrix (where x<y)
+			# Hence the min/max functions
+			xIndex = svdU_lookup[min(x,y)]
+			yIndex = svdV_lookup[max(x,y)]
 			score = np.dot(svdU[xIndex,:],svdV[:,yIndex])
 			if threshold is None or score > threshold:
 				line = "%d\t%d\t%f\n" % (x,y,score)
