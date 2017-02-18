@@ -270,3 +270,22 @@ The next is an analysis of the years after the split year
 ## Make Predictions for Alzheimer's and Parkinson's Disease
 
 Lastly we'll output predictions for Alzheimer's and Parkinson's.
+
+```bash
+echo "C0002395" >> cuids.alzheimers.txt
+echo "C0030567" >> cuids.parkinsons.txt
+echo "C0242422" >> cuids.parkinsons.txt
+
+grep -nFf cuids.alzheimers.txt umlsWordlist.WithIDs.txt | cut -f 1 -d ':' | awk ' { print $0-1; } ' > ids.alzheimers.txt
+grep -nFf cuids.parkinsons.txt umlsWordlist.WithIDs.txt | cut -f 1 -d ':' | awk ' { print $0-1; } ' > ids.parkinsons.txt
+grep -n -P "(T121)|(T200)" umlsWordlist.WithIDs.txt | cut -f 1 -d ':' | awk ' { print $0-1; } ' > ids.drugs.txt
+
+python ../analysis/calcSVDScores.py --svdU svd.trainingAndValidation.U --svdV svd.trainingAndValidation.V --svdSV svd.trainingAndValidation.SV --idsFileA ids.alzheimers.txt --idsFileB ids.drugs.txt --sv $optimalSV --threshold $optimalThreshold --outFile predictions.alzheimers.txt
+sort -k3,3n predictions.alzheimers.txt > predictions.alzheimers.txt.sorted
+mv predictions.alzheimers.txt.sorted predictions.alzheimers.txt
+
+python ../analysis/calcSVDScores.py --svdU svd.trainingAndValidation.U --svdV svd.trainingAndValidation.V --svdSV svd.trainingAndValidation.SV --idsFileA ids.parkinsons.txt --idsFileB ids.drugs.txt --sv $optimalSV --threshold $optimalThreshold --outFile predictions.parkinsons.txt
+sort -k3,3n predictions.parkinsons.txt > predictions.parkinsons.txt.sorted
+mv predictions.parkinsons.txt.sorted predictions.parkinsons.txt
+```
+
