@@ -1,7 +1,7 @@
 #!/bin/bash
 
 lingpipeJar="lingpipe-4.1.0.jar"
-#export _JAVA_OPTIONS="-Xmx256M"
+export _JAVA_OPTIONS="-Xmx256M"
 
 # Check for Lingpipe in CLASSPATH
 lingpipeSearchCount=`echo "$CLASSPATH" | tr ':' '\n' | xargs -I PATH basename PATH | grep -F -x $lingpipeJar | wc -l`
