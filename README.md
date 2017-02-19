@@ -62,7 +62,17 @@ TEMPORARY: We'll do a little simplification for the testing process. Basically w
 mv umlsWordlist.WithIDs.txt fullWordlist.WithIDs.txt
 rm umlsWordlist.Final.txt
 
-grep -f ../data/miniset.cuids fullWordlist.WithIDs.txt > umlsWordlist.WithIDs.txt
+echo -e "cancer\ninib\nanib" > simpler_terms.txt
+grep -f simpler_terms.txt fullWordlist.WithIDs.txt > umlsWordlist.WithIDs.txt
+
+# Make sure Alzheimer's and Parkinson's terms are included
+grep "C0002395" fullWordlist.WithIDs.txt >> umlsWordlist.WithIDs.txt
+grep "C0030567" fullWordlist.WithIDs.txt >> umlsWordlist.WithIDs.txt
+grep "C0030567" fullWordlist.WithIDs.txt >> umlsWordlist.WithIDs.txt
+
+sort -u umlsWordlist.WithIDs.txt > umlsWordlist.WithIDs.txt.unique
+mv umlsWordlist.WithIDs.txt.unique umlsWordlist.WithIDs.txt
+
 cut -f 3 -d $'\t' umlsWordlist.WithIDs.txt > umlsWordlist.Final.txt
 ```
 
