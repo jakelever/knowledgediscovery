@@ -1,6 +1,5 @@
 #!/bin/bash
-set -ex
-set -o pipefail
+set -euxo pipefail
 
 cooccurrenceDir=$1
 occurrenceDir=$2
@@ -126,7 +125,9 @@ do
 
 	python $HERE/checkFilteredCooccurrences.py --cooccurrenceFile $outDir/testing.$testYear.cooccurrences --acceptedIDs $outDir/trainingAndValidation.ids --previousCooccurrences $outDir/tracking.cooccurrences
 
-	sort -R $outDir/testing.$testYear.cooccurrences | head -n $testSize | sort -k1,1n -k2,2n > $outDir/testing.$testYear.subset.$testSize.cooccurrences
+	sort -R $outDir/testing.$testYear.cooccurrences > $outDir/testing.$testYear.cooccurrences.randomOrder
+	head -n $testSize $outDir/testing.$testYear.cooccurrences.randomOrder | sort -k1,1n -k2,2n > $outDir/testing.$testYear.subset.$testSize.cooccurrences
+	rm $outDir/testing.$testYear.cooccurrences.randomOrder
 
 	mkdir $tmpDir/tmpMerge
 	ln -s $outDir/tracking.cooccurrences $tmpDir/tmpMerge/
@@ -139,8 +140,13 @@ done
 
 bash $HERE/mergeMatrix_2keys.sh "$outDir/testing.*" $outDir/testing.all.cooccurrences
 
-sort -R $outDir/testing.all.cooccurrences | head -n $testSize | sort -k1,1n -k2,2n > $outDir/testing.all.subset.$testSize.cooccurrences
-sort -R $outDir/validation.cooccurrences | head -n $validationSize | sort -k1,1n -k2,2n > $outDir/validation.subset.$validationSize.cooccurrences
+sort -R $outDir/testing.all.cooccurrences > $outDir/testing.all.cooccurrences.randomOrder
+head -n $testSize $outDir/testing.all.cooccurrences.randomOrder | sort -k1,1n -k2,2n > $outDir/testing.all.subset.$testSize.cooccurrences
+rm $outDir/testing.all.cooccurrences.randomOrder
+
+sort -R $outDir/validation.cooccurrences > $outDir/validation.cooccurrences.randomOrder
+head -n $validationSize $outDir/validation.cooccurrences.randomOrder | sort -k1,1n -k2,2n > $outDir/validation.subset.$validationSize.cooccurrences
+rm $outDir/validation.cooccurrences.randomOrder
 
 rm -fr $tmpDir
 
