@@ -16,7 +16,8 @@ occurrenceDir=`readlink -f $occurrenceDir`
 sentenceCountDir=`readlink -f $sentenceCountDir`
 outDir=`readlink -f $outDir`
 
-tmpDir=tmp
+tmpDir=tmp.$HOSTNAME.$$.$RANDOM
+rm -fr $tmpDir
 
 trainingAndValidationSplit=$splitYear
 trainingSplit=$(($splitYear-1))
@@ -46,9 +47,9 @@ cat $tmpDir/trainingAndValidationFiles.cooccurrences | xargs -I FILE ln -s FILE 
 cat $tmpDir/trainingAndValidationFiles.occurrences | xargs -I FILE ln -s FILE $tmpDir/trainingAndValidation/occurrences
 cat $tmpDir/trainingAndValidationFiles.sentenceCounts | xargs -I FILE ln -s FILE $tmpDir/trainingAndValidation/sentenceCounts
 
-bash $HERE/mergeMatrix_2keys.sh tmp/trainingAndValidation/cooccurrences/ $outDir/trainingAndValidation.cooccurrences
-bash $HERE/mergeMatrix_1key.sh tmp/trainingAndValidation/occurrences $outDir/trainingAndValidation.occurrences.unfiltered
-bash $HERE/mergeMatrix_0keys.sh tmp/trainingAndValidation/sentenceCounts $outDir/trainingAndValidation.sentenceCounts
+bash $HERE/mergeMatrix_2keys.sh $tmpDir/trainingAndValidation/cooccurrences/ $outDir/trainingAndValidation.cooccurrences
+bash $HERE/mergeMatrix_1key.sh $tmpDir/trainingAndValidation/occurrences $outDir/trainingAndValidation.occurrences.unfiltered
+bash $HERE/mergeMatrix_0keys.sh $tmpDir/trainingAndValidation/sentenceCounts $outDir/trainingAndValidation.sentenceCounts
 
 # Get the list of term IDs that actually occur in cooccurrences
 cat $outDir/trainingAndValidation.cooccurrences | cut -f 1,2 -d $'\t' | tr '\t' '\n' | sort -un > $outDir/trainingAndValidation.ids
@@ -76,9 +77,9 @@ cat $tmpDir/trainingFiles.cooccurrences | xargs -I FILE ln -s FILE $tmpDir/train
 cat $tmpDir/trainingFiles.occurrences | xargs -I FILE ln -s FILE $tmpDir/training/occurrences
 cat $tmpDir/trainingFiles.sentenceCounts | xargs -I FILE ln -s FILE $tmpDir/training/sentenceCounts
 
-bash $HERE/mergeMatrix_2keys.sh tmp/training/cooccurrences/ $outDir/training.cooccurrences
-bash $HERE/mergeMatrix_1key.sh tmp/training/occurrences $outDir/training.occurrences.unfiltered
-bash $HERE/mergeMatrix_0keys.sh tmp/training/sentenceCounts $outDir/training.sentenceCounts
+bash $HERE/mergeMatrix_2keys.sh $tmpDir/training/cooccurrences/ $outDir/training.cooccurrences
+bash $HERE/mergeMatrix_1key.sh $tmpDir/training/occurrences $outDir/training.occurrences.unfiltered
+bash $HERE/mergeMatrix_0keys.sh $tmpDir/training/sentenceCounts $outDir/training.sentenceCounts
 
 # Get the list of term IDs that actually occur in cooccurrences
 cat $outDir/training.cooccurrences | cut -f 1,2 -d $'\t' | tr '\t' '\n' | sort -un > $outDir/training.ids
