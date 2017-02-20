@@ -46,7 +46,7 @@ if __name__ == '__main__':
 		tn = negativeCount - fp
 
 		#precision = tp / float(tp + fp)
-		true_positive_rate,false_positive_rate,adjustedPrecision = 0.0,0.0,0.0
+		true_positive_rate,false_positive_rate,adjusted_precision = 0.0,0.0,0.0
 
 		if (tp+fn) != 0:
 			true_positive_rate = tp / float(tp + fn)
