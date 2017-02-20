@@ -59,10 +59,10 @@ if __name__ == '__main__':
 
 		adjusted_f1score = 0.0
 		if (true_positive_rate+adjusted_precision) != 0.0:
-			adjusted_f1Score = 2 * (true_positive_rate*adjusted_precision) / (true_positive_rate+adjusted_precision)
+			adjusted_f1score = 2 * (true_positive_rate*adjusted_precision) / (true_positive_rate+adjusted_precision)
 
 		#print "%f\t%f\t%f\t%f\t%f" % (threshold,recall,fpr,adjustedPrecision,adjustedF1Score)
-		outData = [args.analysisName, true_positive_rate, false_positive_rate, adjusted_precision, adjusted_f1Score, tp, fp, tn, fn, threshold]
+		outData = [args.analysisName, true_positive_rate, false_positive_rate, adjusted_precision, adjusted_f1score, tp, fp, tn, fn, threshold]
 
 		line = "\t".join(map(str,outData))
 		print line
