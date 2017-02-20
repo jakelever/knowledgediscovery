@@ -40,8 +40,8 @@ if __name__ == '__main__':
 	#	tn = negativeCount - fp
 
 	for threshold in thresholds:
-		tp = sum ( [ 1 for x in positiveScores if x > threshold ] )
-		fp = sum ( [ 1 for x in negativeScores if x > threshold ] )
+		tp = sum ( [ 1 for x in positiveScores if x < threshold ] )
+		fp = sum ( [ 1 for x in negativeScores if x < threshold ] )
 		fn = positiveCount - tp
 		tn = negativeCount - fp
 
