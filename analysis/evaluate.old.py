@@ -30,6 +30,9 @@ if __name__ == '__main__':
 
 	thresholds = sorted(list(set(positiveScores + negativeScores)))
 
+	# Add in one extra threshold that is the min minus one
+	thresholds = [thresholds[0]-1] + thresholds
+
 	#for threshold,trueOrFalse in combinedScores:
 	#	if trueOrFalse == True:
 	#		tp += 1
@@ -40,8 +43,8 @@ if __name__ == '__main__':
 	#	tn = negativeCount - fp
 
 	for threshold in thresholds:
-		tp = sum ( [ 1 for x in positiveScores if x < threshold ] )
-		fp = sum ( [ 1 for x in negativeScores if x < threshold ] )
+		tp = sum ( [ 1 for x in positiveScores if x > threshold ] )
+		fp = sum ( [ 1 for x in negativeScores if x > threshold ] )
 		fn = positiveCount - tp
 		tn = negativeCount - fp
 

@@ -10,28 +10,23 @@ if __name__ == '__main__':
 	parser.add_argument('--analysisName',required=True,type=str,help='Name of this analysis for output data')
 	args = parser.parse_args()
 
-	#print "Loading positive scores"
-	with open(args.positiveScores) as f:
-		positiveScores = [ float(line.strip()) for line in f ]
-	
-	#print "Loading negative scores"
-	with open(args.negativeScores) as f:
-		negativeScores = [ float(line.strip()) for line in f ]
-
-	# We combined the score data with boolean to track whether its associated with a positive or negative
-	# class. We then sort them by the threshold
-	combinedScores = [ (x,False) for x in negativeScores ] + [ (x,True) for x in positiveScores ]
-	combinedScores = sorted(combinedScores)
-
-	positiveCount = len(positiveScores)
-	negativeCount = len(negativeScores)
-
-	#tp,fp = 0,0
-
+	# Get the class balance
 	cb = args.classBalance
 	oneMinusCB = 1.0 - cb
 
-	#thresholds = sorted(list(set(positiveScores + negativeScores)))
+	# Load the scores
+	with open(args.positiveScores) as f:
+		positiveScores = [ float(line.strip()) for line in f ]
+	with open(args.negativeScores) as f:
+		negativeScores = [ float(line.strip()) for line in f ]
+	positiveCount = len(positiveScores)
+	negativeCount = len(negativeScores)
+
+	# We combined the score data with boolean to track whether its associated with a positive or negative
+	# class. We then sort them by the threshold
+	# Note that we sort in reverse.
+	combinedScores = [ (x,False) for x in negativeScores ] + [ (x,True) for x in positiveScores ]
+	combinedScores = sorted(combinedScores,reverse=True)
 
 	# First we want to find all the places that the score actually changes. These are the points where we'll calculate
 	# the various scores. If the score is an integer, then there maybe multiple appeareances of the same score
@@ -44,6 +39,10 @@ if __name__ == '__main__':
 	cumulativePositives = [0] + list(np.cumsum(positives))
 	negatives = [ 1-x for x in positives ]
 	cumulativeNegatives = [0] + list(np.cumsum(negatives))
+	
+	# We need to add one more to pick up the last point
+	differences.append(len(combinedScores))
+	combinedScores.append((combinedScores[-1][0]-1,None))
 
 	# Then we iterate through all the places where the scores change (in the ordered list)
 	# Extract out the true positives and false positive count that we've already calculated
@@ -56,7 +55,6 @@ if __name__ == '__main__':
 		fn = positiveCount - tp
 		tn = negativeCount - fp
 
-		#precision = tp / float(tp + fp)
 		true_positive_rate,false_positive_rate,adjusted_precision = 0.0,0.0,0.0
 
 		if (tp+fn) != 0:
