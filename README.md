@@ -304,17 +304,22 @@ grep -xFf finalDataset/trainingAndValidation.ids ids.drugs.txt > ids.drugs.txt.f
 mv ids.drugs.txt.filtered ids.drugs.txt
 
 # Start calculating scores
-python ../analysis/calcSVDScores.py --svdU svd.trainingAndValidation.U --svdV svd.trainingAndValidation.V --svdSV svd.trainingAndValidation.SV --idsFileA ids.alzheimers.txt --idsFileB ids.drugs.txt --sv $optimalSV --threshold $optimalThreshold --outFile predictions.alzheimers.txt
-sort -k3,3gr predictions.alzheimers.txt > predictions.alzheimers.txt.sorted
-mv predictions.alzheimers.txt.sorted predictions.alzheimers.txt
+python ../analysis/calcSVDScores.py --svdU svd.all.U --svdV svd.all.V --svdSV svd.all.SV --idsFileA ids.alzheimers.txt --idsFileB ids.drugs.txt --sv $optimalSV --threshold $optimalThreshold --outFile predictions.alzheimers.txt
 
-python ../analysis/calcSVDScores.py --svdU svd.trainingAndValidation.U --svdV svd.trainingAndValidation.V --svdSV svd.trainingAndValidation.SV --idsFileA ids.parkinsons.txt --idsFileB ids.drugs.txt --sv $optimalSV --threshold $optimalThreshold --outFile predictions.parkinsons.txt
-sort -k3,3gr predictions.parkinsons.txt > predictions.parkinsons.txt.sorted
-mv predictions.parkinsons.txt.sorted predictions.parkinsons.txt
+python ../analysis/calcSVDScores.py --svdU svd.all.U --svdV svd.all.V --svdSV svd.all.SV --idsFileA ids.parkinsons.txt --idsFileB ids.drugs.txt --sv $optimalSV --threshold $optimalThreshold --outFile predictions.parkinsons.txt
 
-# Lastly get the actual terms out of the file for the predictions
-cat predictions.alzheimers.txt | awk -v f=umlsWordlist.WithIDs.txt ' BEGIN { x=0; while (getline < f) dict[x++] = $0; } { print $0"\t"dict[$2]; } ' > predictions.alzheimers.withterms.txt
-cat predictions.parkinsons.txt | awk -v f=umlsWordlist.WithIDs.txt ' BEGIN { x=0; while (getline < f) dict[x++] = $0; } { print $0"\t"dict[$2]; } ' > predictions.parkinsons.withterms.txt
+# Then filter out for only novel discoveries
+bash ../combine_data/filterMatrix.sh predictions.alzheimers.txt finalDataset/all.ids finalDataset/all.cooccurrences predictions.alzheimers.novel.txt
+
+bash ../combine_data/filterMatrix.sh predictions.parkinsons.txt finalDataset/all.ids finalDataset/all.cooccurrences predictions.parkinsons.novel.txt
+
+# Lastly get the actual terms out of the file for the predictions and sort them
+cat predictions.alzheimers.novel.txt | awk -v f=umlsWordlist.WithIDs.txt ' BEGIN { x=0; while (getline < f) dict[x++] = $0; } { print $0"\t"dict[$2]; } ' | sort -k3,3gr > predictions.alzheimers.novel.withterms.txt
+cat predictions.parkinsons.novel.txt | awk -v f=umlsWordlist.WithIDs.txt ' BEGIN { x=0; while (getline < f) dict[x++] = $0; } { print $0"\t"dict[$2]; } ' | sort -k3,3gr > predictions.parkinsons.novel.withterms.txt
+
+# Clean up
+rm predictions.alzheimers.txt predictions.alzheimers.novel.txt
+rm predictions.parkinsons.txt predictions.parkinsons.novel.txt
 
 ```
 
