@@ -154,18 +154,18 @@ validation_classBalance=`echo "$validation_testCount / (($validation_termCount*(
 Now we need to test a range of singular values to find the optimal value
 
 ```bash
-for sv in `seq 5 100`
-do 
-  
-  echo $sv
-  
-  python ../analysis/calcSVDScores.py --svdU svd.training.U --svdV svd.training.V --svdSV svd.training.SV --relationsToScore finalDataset/validation.subset.1000000.cooccurrences --outFile scores.validation.positive.svd --sv $sv
-  
-  python ../analysis/calcSVDScores.py --svdU svd.training.U --svdV svd.training.V --svdSV svd.training.SV --relationsToScore negativeData.validation --outFile scores.validation.negative.svd --sv $sv
-  
-  python ../analysis/evaluate.py --positiveScores <(cut -f 3 scores.validation.positive.svd) --negativeScores <(cut -f 3 scores.validation.negative.svd) --classBalance $validation_classBalance --analysisName "$sv" >> svd.results
-  
-done
+minSV=5
+maxSV=500
+numThreads=16
+
+mkdir svd.crossvalidation
+seq $minSV $maxSV | xargs -I NSV -P $numThreads python ../analysis/calcSVDScores.py --svdU svd.training.U --svdV svd.training.V --svdSV svd.training.SV --relationsToScore finalDataset/validation.subset.1000000.cooccurrences --sv NSV --outFile svd.crossvalidation/positive.NSV
+
+seq $minSV $maxSV | xargs -I NSV -P $numThreads python ../analysis/calcSVDScores.py --svdU svd.training.U --svdV svd.training.V --svdSV svd.training.SV --relationsToScore negativeData.validation --sv NSV --outFile svd.crossvalidation/negative.NSV
+
+seq $minSV $maxSV | xargs -I NSV -P $numThreads bash -c "python ../analysis/evaluate.py --positiveScores <(cut -f 3 svd.crossvalidation/positive.NSV) --negativeScores <(cut -f 3 svd.crossvalidation/negative.NSV) --classBalance $validation_classBalance --analysisName NSV > svd.crossvalidation/results.NSV"
+
+cat svd.crossvalidation/results.* > svd.results
 ```
 
 Then we calculate the Area under the Precision Recall curve for each # of singular values and find the optimal value
