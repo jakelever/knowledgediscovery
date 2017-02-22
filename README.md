@@ -137,9 +137,14 @@ python ../analysis/generateNegativeData.py --trueData <(cat finalDataset/trainin
 We'll run a singular value decomposition on the co-occurrence data.
 
 ```bash
-bash ../analysis/runSVD.sh --dimension `cat umlsWordlist.Final.txt | wc -l` --svNum 500 --matrix finalDataset/training.cooccurrences --outU svd.training.U --outV svd.training.V --outSV svd.training.SV --mirror --binarize
+# Get the full number of terms in the wordlist
+allTermsCount=`cat umlsWordlist.Final.txt | wc -l`
 
-bash ../analysis/runSVD.sh --dimension `cat umlsWordlist.Final.txt | wc -l` --svNum 500 --matrix finalDataset/trainingAndValidation.cooccurrences --outU svd.trainingAndValidation.U --outV svd.trainingAndValidation.V --outSV svd.trainingAndValidation.SV --mirror --binarize
+bash ../analysis/runSVD.sh --dimension $allTermsCount -svNum 500 --matrix finalDataset/training.cooccurrences --outU svd.training.U --outV svd.training.V --outSV svd.training.SV --mirror --binarize
+
+bash ../analysis/runSVD.sh --dimension $allTermsCount --svNum 500 --matrix finalDataset/trainingAndValidation.cooccurrences --outU svd.trainingAndValidation.U --outV svd.trainingAndValidation.V --outSV svd.trainingAndValidation.SV --mirror --binarize
+
+bash ../analysis/runSVD.sh --dimension $allTermsCount --svNum 500 --matrix finalDataset/all.cooccurrences --outU svd.all.U --outV svd.all.V --outSV svd.all.SV --mirror --binarize
 ```
 
 We first need to calculate the class balance for the validation set
@@ -299,17 +304,22 @@ grep -xFf finalDataset/trainingAndValidation.ids ids.drugs.txt > ids.drugs.txt.f
 mv ids.drugs.txt.filtered ids.drugs.txt
 
 # Start calculating scores
-python ../analysis/calcSVDScores.py --svdU svd.trainingAndValidation.U --svdV svd.trainingAndValidation.V --svdSV svd.trainingAndValidation.SV --idsFileA ids.alzheimers.txt --idsFileB ids.drugs.txt --sv $optimalSV --threshold $optimalThreshold --outFile predictions.alzheimers.txt
-sort -k3,3gr predictions.alzheimers.txt > predictions.alzheimers.txt.sorted
-mv predictions.alzheimers.txt.sorted predictions.alzheimers.txt
+python ../analysis/calcSVDScores.py --svdU svd.all.U --svdV svd.all.V --svdSV svd.all.SV --idsFileA ids.alzheimers.txt --idsFileB ids.drugs.txt --sv $optimalSV --threshold $optimalThreshold --outFile predictions.alzheimers.txt
 
-python ../analysis/calcSVDScores.py --svdU svd.trainingAndValidation.U --svdV svd.trainingAndValidation.V --svdSV svd.trainingAndValidation.SV --idsFileA ids.parkinsons.txt --idsFileB ids.drugs.txt --sv $optimalSV --threshold $optimalThreshold --outFile predictions.parkinsons.txt
-sort -k3,3gr predictions.parkinsons.txt > predictions.parkinsons.txt.sorted
-mv predictions.parkinsons.txt.sorted predictions.parkinsons.txt
+python ../analysis/calcSVDScores.py --svdU svd.all.U --svdV svd.all.V --svdSV svd.all.SV --idsFileA ids.parkinsons.txt --idsFileB ids.drugs.txt --sv $optimalSV --threshold $optimalThreshold --outFile predictions.parkinsons.txt
 
-# Lastly get the actual terms out of the file for the predictions
-cat predictions.alzheimers.txt | awk -v f=umlsWordlist.WithIDs.txt ' BEGIN { x=0; while (getline < f) dict[x++] = $0; } { print $0"\t"dict[$2]; } ' > predictions.alzheimers.withterms.txt
-cat predictions.parkinsons.txt | awk -v f=umlsWordlist.WithIDs.txt ' BEGIN { x=0; while (getline < f) dict[x++] = $0; } { print $0"\t"dict[$2]; } ' > predictions.parkinsons.withterms.txt
+# Then filter out for only novel discoveries
+bash ../combine_data/filterMatrix.sh predictions.alzheimers.txt finalDataset/all.ids finalDataset/all.cooccurrences predictions.alzheimers.novel.txt
+
+bash ../combine_data/filterMatrix.sh predictions.parkinsons.txt finalDataset/all.ids finalDataset/all.cooccurrences predictions.parkinsons.novel.txt
+
+# Lastly get the actual terms out of the file for the predictions and sort them
+cat predictions.alzheimers.novel.txt | awk -v f=umlsWordlist.WithIDs.txt ' BEGIN { x=0; while (getline < f) dict[x++] = $0; } { print $0"\t"dict[$2]; } ' | sort -k3,3gr > predictions.alzheimers.novel.withterms.txt
+cat predictions.parkinsons.novel.txt | awk -v f=umlsWordlist.WithIDs.txt ' BEGIN { x=0; while (getline < f) dict[x++] = $0; } { print $0"\t"dict[$2]; } ' | sort -k3,3gr > predictions.parkinsons.novel.withterms.txt
+
+# Clean up
+rm predictions.alzheimers.txt predictions.alzheimers.novel.txt
+rm predictions.parkinsons.txt predictions.parkinsons.novel.txt
 
 ```
 
