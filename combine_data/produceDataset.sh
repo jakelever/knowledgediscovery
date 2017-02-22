@@ -148,5 +148,12 @@ sort -R $outDir/validation.cooccurrences > $outDir/validation.cooccurrences.rand
 head -n $validationSize $outDir/validation.cooccurrences.randomOrder | sort -k1,1n -k2,2n > $outDir/validation.subset.$validationSize.cooccurrences
 rm $outDir/validation.cooccurrences.randomOrder
 
+mkdir $tmpDir/all.cooccurrences
+ln -s $outDir/testing.all.cooccurrences $tmpDir/all.cooccurrences/
+ln -s $outDir/trainingAndValidation.cooccurrences $tmpDir/all.cooccurrences/
+bash $HERE/mergeMatrix_2keys.sh $tmpDir/all.cooccurrences $outDir/all.cooccurrences
+
+cat $outDir/all.cooccurrences | cut -f 1,2 -d $'\t' | tr '\t' '\n' | sort -un > $outDir/all.ids
+
 rm -fr $tmpDir
 
