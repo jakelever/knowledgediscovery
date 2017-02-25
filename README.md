@@ -177,14 +177,14 @@ Then we calculate the Area under the Precision Recall curve for each # of singul
 
 ```bash
 /gsc/software/linux-x86_64/python-2.7.5/bin/python ../analysis/statsCalculator.py --evaluationFile svd.results > curves.svd
-sort -k3,3n curves.svd | tail -n 1 | cut -f 1 > parameters.sv
+sort -k3,3g curves.svd | tail -n 1 | cut -f 1 > parameters.sv
 optimalSV=`cat parameters.sv`
 ```
 
 We'll also calculate the optimal threshold which is useful later. We won't use a threshold to compare the different methods (as we're using the Area under the Precision Recall curve). But we will want to use a threshold to call positive/negatives later in our analysis. The threshold is calculated as the value that gives the optimal F1-score. So we sort by F1-score and pull out the associated threshold.
 
 ```bash
-sort -k5,5n svd.crossvalidation/results.$optimalSV | cut -f 10 -d $'\t' | tail -n 1 > parameters.threshold
+sort -k5,5g svd.crossvalidation/results.$optimalSV | cut -f 10 -d $'\t' | tail -n 1 > parameters.threshold
 optimalThreshold=`cat parameters.threshold`
 ```
 
