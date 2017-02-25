@@ -118,10 +118,9 @@ do
 	#ln -s $occurrenceDir/$testYear* $tmpDir/testing/$testYear/occurrences
 	#ln -s $sentenceCountDir/$testYear* $tmpDir/testing/$testYear/sentenceCounts
 	
-	bash $HERE/mergeMatrix_2keys.sh $tmpDir/testing/$testYear/cooccurrences $outDir/testing.$testYear.cooccurrences
+	bash $HERE/mergeMatrix_2keys.sh $tmpDir/testing/$testYear/cooccurrences $outDir/testing.$testYear.cooccurrences.unfiltered
 
-	bash $HERE/filterMatrix.sh $outDir/testing.$testYear.cooccurrences $outDir/trainingAndValidation.ids $outDir/tracking.cooccurrences $outDir/testing.$testYear.cooccurrences.tmp
-	mv $outDir/testing.$testYear.cooccurrences.tmp $outDir/testing.$testYear.cooccurrences
+	bash $HERE/filterMatrix.sh $outDir/testing.$testYear.cooccurrences.unfiltered $outDir/trainingAndValidation.ids $outDir/tracking.cooccurrences $outDir/testing.$testYear.cooccurrences
 
 	python $HERE/checkFilteredCooccurrences.py --cooccurrenceFile $outDir/testing.$testYear.cooccurrences --acceptedIDs $outDir/trainingAndValidation.ids --previousCooccurrences $outDir/tracking.cooccurrences
 
@@ -138,21 +137,26 @@ do
 	rm -fr $tmpDir/tmpMerge
 done
 
-bash $HERE/mergeMatrix_2keys.sh "$outDir/testing.*" $outDir/testing.all.cooccurrences
+# Now we make the combined version of all the test cooccurrences
+bash $HERE/mergeMatrix_2keys.sh "$outDir/testing.*.cooccurrences" $outDir/testing.all.cooccurrences
 
+# Now we subset the combined test cooccurrences
 sort -R $outDir/testing.all.cooccurrences > $outDir/testing.all.cooccurrences.randomOrder
 head -n $testSize $outDir/testing.all.cooccurrences.randomOrder | sort -k1,1n -k2,2n > $outDir/testing.all.subset.$testSize.cooccurrences
 rm $outDir/testing.all.cooccurrences.randomOrder
 
+# We also subset the validation cooccurrences
 sort -R $outDir/validation.cooccurrences > $outDir/validation.cooccurrences.randomOrder
 head -n $validationSize $outDir/validation.cooccurrences.randomOrder | sort -k1,1n -k2,2n > $outDir/validation.subset.$validationSize.cooccurrences
 rm $outDir/validation.cooccurrences.randomOrder
 
+# Lastly we're going to make one epic cooccurrences for everything
 mkdir $tmpDir/all.cooccurrences
-ln -s $outDir/testing.all.cooccurrences $tmpDir/all.cooccurrences/
+find $outDir -type f -name 'testing.*.unfiltered' | xargs -I FILE ln -s FILE $tmpDir/all.cooccurrences/
 ln -s $outDir/trainingAndValidation.cooccurrences $tmpDir/all.cooccurrences/
 bash $HERE/mergeMatrix_2keys.sh $tmpDir/all.cooccurrences $outDir/all.cooccurrences
 
+# And calculate the appropriate IDs for that set
 cat $outDir/all.cooccurrences | cut -f 1,2 -d $'\t' | tr '\t' '\n' | sort -un > $outDir/all.ids
 
 rm -fr $tmpDir
