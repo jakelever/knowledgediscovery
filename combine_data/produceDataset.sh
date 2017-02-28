@@ -98,7 +98,7 @@ ln -s $cooccurrenceDir/$splitYear* $tmpDir/validation/$splitYear/cooccurrences
 
 bash $HERE/mergeMatrix_2keys.sh $tmpDir/validation/$splitYear/cooccurrences $outDir/validation.cooccurrences
 
-bash $HERE/filterMatrix.sh $outDir/validation.cooccurrences $outDir/training.ids $outDir/training.cooccurrences $outDir/validation.cooccurrences.tmp
+bash $HERE/filterCooccurrences.sh $outDir/validation.cooccurrences $outDir/training.ids $outDir/training.cooccurrences $outDir/validation.cooccurrences.tmp
 mv $outDir/validation.cooccurrences.tmp $outDir/validation.cooccurrences
 
 python $HERE/checkFilteredCooccurrences.py --cooccurrenceFile $outDir/validation.cooccurrences --acceptedIDs $outDir/training.ids --previousCooccurrences $outDir/training.cooccurrences
@@ -120,7 +120,7 @@ do
 	
 	bash $HERE/mergeMatrix_2keys.sh $tmpDir/testing/$testYear/cooccurrences $outDir/testing.$testYear.cooccurrences.unfiltered
 
-	bash $HERE/filterMatrix.sh $outDir/testing.$testYear.cooccurrences.unfiltered $outDir/trainingAndValidation.ids $outDir/tracking.cooccurrences $outDir/testing.$testYear.cooccurrences
+	bash $HERE/filterCooccurrences.sh $outDir/testing.$testYear.cooccurrences.unfiltered $outDir/trainingAndValidation.ids $outDir/tracking.cooccurrences $outDir/testing.$testYear.cooccurrences
 
 	python $HERE/checkFilteredCooccurrences.py --cooccurrenceFile $outDir/testing.$testYear.cooccurrences --acceptedIDs $outDir/trainingAndValidation.ids --previousCooccurrences $outDir/tracking.cooccurrences
 
