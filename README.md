@@ -307,9 +307,9 @@ python ../analysis/calcSVDScores.py --svdU svd.all.U --svdV svd.all.V --svdSV sv
 python ../analysis/calcSVDScores.py --svdU svd.all.U --svdV svd.all.V --svdSV svd.all.SV --idsFileA ids.parkinsons.txt --idsFileB ids.drugs.txt --sv $optimalSV --threshold $optimalThreshold --outFile predictions.parkinsons.txt
 
 # Then filter out for only novel discoveries
-bash ../combine_data/filterMatrix.sh predictions.alzheimers.txt finalDataset/all.ids finalDataset/all.cooccurrences predictions.alzheimers.novel.txt
+bash ../combine_data/filterCooccurrences.sh predictions.alzheimers.txt finalDataset/all.ids finalDataset/all.cooccurrences predictions.alzheimers.novel.txt
 
-bash ../combine_data/filterMatrix.sh predictions.parkinsons.txt finalDataset/all.ids finalDataset/all.cooccurrences predictions.parkinsons.novel.txt
+bash ../combine_data/filterCooccurrences.sh predictions.parkinsons.txt finalDataset/all.ids finalDataset/all.cooccurrences predictions.parkinsons.novel.txt
 
 # Lastly get the actual terms out of the file for the predictions and sort them
 cat predictions.alzheimers.novel.txt | awk -v f=umlsWordlist.WithIDs.txt ' BEGIN { x=0; while (getline < f) dict[x++] = $0; } { print $0"\t"dict[$2]; } ' | sort -k3,3gr > predictions.alzheimers.novel.withterms.txt
