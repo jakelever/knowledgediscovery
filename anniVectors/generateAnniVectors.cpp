@@ -113,9 +113,13 @@ float U(int i, int j,
 		std::unordered_map<int,int> *occurrences,
 		int sentenceCount)
 {
-	float H2score = H2(i,j,cooccurrences,occurrences,sentenceCount);
-	float numerator = H1(i,occurrences,sentenceCount) + H1(j,occurrences,sentenceCount) + H2score;
-	float denominator = 0.5 * H2score;
+	float H_i = H1(i,occurrences,sentenceCount);
+	float H_j = H1(j,occurrences,sentenceCount);
+
+	float H_i_j = H2(i,j,cooccurrences,occurrences,sentenceCount);
+
+	float numerator = H_i + H_j - H_i_j;
+	float denominator = 0.5 * (H_i + H_j);
 	
 	//printf("H2score=%f numerator=%f denominator=%f\n", H2score,numerator,denominator);
 	
