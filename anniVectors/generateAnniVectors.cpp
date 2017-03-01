@@ -92,18 +92,36 @@ float H2(int i, int j,
 	float N_j = (float)(*occurrences)[j];
 	float N = (float)sentenceCount;
 
-	if (N_ij==0 || (N_j-N_ij)==0 || (N_i-N_ij)==0 || (N-N_j-N_i)==0)
+	int useOld = 0;
+
+	if (useOld == 1)
 	{
-		return 0.0;
+
+		if (N_ij==0 || (N_j-N_ij)==0 || (N_i-N_ij)==0 || (N-N_j-N_i)==0)
+		{
+			return 0.0;
+		}
+		else
+		{
+			float score = -(N_ij/N) * log(N_ij/N);
+			score += - ((N_j-N_ij)/N) * log((N_j-N_ij)/N);
+			score += - ((N_i-N_ij)/N) * log((N_i-N_ij)/N);
+			score += - ((N-N_j-N_i)/N) * log((N-N_j-N_i)/N);
+			return score;
+		}
 	}
 	else
 	{
-		//print "N_i=%f N_j=%f N_ij=%f N=%f" % (N_i,N_j,N_ij,N)
-		//score = -(N_ij/N) * log(N_ij/N) - ((N_j-N_ij)/N) * log((N_j-N_ij)/N) - ((N_i-N_ij)/N) * log((N_i-N_ij)/N) - ((N-N_j-N_i)/N) * log((N-N_j-N_i)/N)
-		float score = -(N_ij/N) * log(N_ij/N);
-		score += - ((N_j-N_ij)/N) * log((N_j-N_ij)/N);
-		score += - ((N_i-N_ij)/N) * log((N_i-N_ij)/N);
-		score += - ((N-N_j-N_i)/N) * log((N-N_j-N_i)/N);
+		float score = 0.0;
+		if (N_ij != 0)
+			score += -(N_ij/N) * log(N_ij/N);
+		if ((N_j-N_ij) != 0)
+			score += - ((N_j-N_ij)/N) * log((N_j-N_ij)/N);
+		if ((N_i-N_ij) != 0)
+			score += - ((N_i-N_ij)/N) * log((N_i-N_ij)/N);
+		if ((N-N_j-N_i) != 0)
+			score += - ((N-N_j-N_i)/N) * log((N-N_j-N_i)/N);
+
 		return score;
 	}
 }
@@ -120,6 +138,9 @@ float U(int i, int j,
 
 	float numerator = H_i + H_j - H_i_j;
 	float denominator = 0.5 * (H_i + H_j);
+
+	//if (i<10 and j<10)
+	//	printf("DEBUG\t%d\t%d\t%f\t%f\t%f\t%f\t%f\t%f\n",i,j,H_i,H_j,H_i_j,numerator,denominator,numerator/denominator);
 	
 	//printf("H2score=%f numerator=%f denominator=%f\n", H2score,numerator,denominator);
 	
