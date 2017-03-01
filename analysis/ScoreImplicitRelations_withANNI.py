@@ -56,15 +56,30 @@ def H2(i,j,cooccurrences,occurrences,sentenceCount):
 	N_j = float(occurrences[j])
 	N = float(sentenceCount)
 
-	if N_ij==0 or (N_j-N_ij)==0 or (N_i-N_ij)==0 or (N-N_j-N_i)==0:
-		return 0.0
+	old = False
+
+	if old:
+		if N_ij==0 or (N_j-N_ij)==0 or (N_i-N_ij)==0 or (N-N_j-N_i)==0:
+			return 0.0
+		else:
+			score = -(N_ij/N) * log(N_ij/N)
+			score += - ((N_j-N_ij)/N) * log((N_j-N_ij)/N)
+			score += - ((N_i-N_ij)/N) * log((N_i-N_ij)/N)
+			score += - ((N-N_j-N_i)/N) * log((N-N_j-N_i)/N)
+			return score
+	
 	else:
-		#print "N_i=%f N_j=%f N_ij=%f N=%f" % (N_i,N_j,N_ij,N)
-		#score = -(N_ij/N) * log(N_ij/N) - ((N_j-N_ij)/N) * log((N_j-N_ij)/N) - ((N_i-N_ij)/N) * log((N_i-N_ij)/N) - ((N-N_j-N_i)/N) * log((N-N_j-N_i)/N)
-		score = -(N_ij/N) * log(N_ij/N) 
-		score += - ((N_j-N_ij)/N) * log((N_j-N_ij)/N)
-		score += - ((N_i-N_ij)/N) * log((N_i-N_ij)/N)
-		score += - ((N-N_j-N_i)/N) * log((N-N_j-N_i)/N)
+		score = 0.0
+
+		if N_ij != 0:
+			score += -(N_ij/N) * log(N_ij/N) 
+		if (N_j-N_ij) != 0:
+			score += - ((N_j-N_ij)/N) * log((N_j-N_ij)/N)
+		if (N_i-N_ij) != 0:
+			score += - ((N_i-N_ij)/N) * log((N_i-N_ij)/N)
+		if (N-N_j-N_i) != 0:
+			score += - ((N-N_j-N_i)/N) * log((N-N_j-N_i)/N)
+
 		return score
 
 def U(i,j,cooccurrences,occurrences,sentenceCount):
@@ -76,6 +91,9 @@ def U(i,j,cooccurrences,occurrences,sentenceCount):
 
 	numerator = H_i + H_j - H_i_j
 	denominator = 0.5 * (H_i + H_j)
+
+	if (i<10 and j<10):
+		print "DEBUG\t%d\t%d\t%f\t%f\t%f\t%f\t%f\t%f" % (i,j,H_i,H_j,H_i_j,numerator,denominator,numerator/denominator)
 	
 	if denominator == 0:
 		return 0.0
