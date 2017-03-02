@@ -11,7 +11,7 @@ data <- read.table(inData)
 data <- data[,c(1,3)]
 colnames(data) <- c("Method","AreaUnderPRCurve")
 
-tiff(outPlot)
+png(outPlot)
 barchart( AreaUnderPRCurve ~ Method, data, col="black")
 dev.off()
 

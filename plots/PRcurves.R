@@ -12,7 +12,7 @@ colnames(data) <- c('analysisName', 'true_positive_rate', 'false_positive_rate',
 
 data <- data[order(data$true_positive_rate,data$adjusted_precision),]
 
-tiff(outPlot)
+png(outPlot)
 xyplot(adjusted_precision~true_positive_rate,data,groups=analysisName,type="l",xlim=c(0,1),ylim=c(0,1),auto.key=T)
 dev.off()
 

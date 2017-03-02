@@ -12,7 +12,7 @@ data$year <- as.factor(as.character(data$year))
 data$recall <- data$predicted/data$total
 
 
-tiff(outPlot)
+png(outPlot)
 barchart( recall ~ year, data, horizontal=F, ylim=c(0,1.1*max(data$recall)), col="black")
 dev.off()
 
