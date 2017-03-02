@@ -241,7 +241,8 @@ int main(int argc, char** argv)
 			//int v1 = *it1;
 			int v1 = vectorsToCalculate_array[i];
 			//for ( auto it2 = occurrences.begin(); it2 != occurrences.end(); ++it2 )
-			
+		
+			float norm2 = 0;
 			//fprintf(outIndexFile,"%d\n", v1);
 			for ( int j=0; j<seen_size; j++ )
 			{
@@ -261,6 +262,17 @@ int main(int argc, char** argv)
 				//fprintf(outVectorFile, "%f ", Uvalue);
 				
 				tmpData[j] = Uvalue;
+
+				norm2 += Uvalue;
+			}
+
+			int normalize = 0;
+
+			if (normalize == 1)
+			{
+				float norm = sqrt(norm2);
+				for ( int j=0; j<seen_size; j++ )
+					tmpData[j] /= norm;
 			}
 			//fprintf(outVectorFile, "\n");
 			
