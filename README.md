@@ -127,7 +127,30 @@ negativeCount=1000000
 python ../analysis/generateNegativeData.py --trueData <(cat finalDataset/training.cooccurrences finalDataset/validation.cooccurrences) --knownConceptIDs finalDataset/training.ids --num $negativeCount --outFile negativeData.validation
 
 python ../analysis/generateNegativeData.py --trueData <(cat finalDataset/trainingAndValidation.cooccurrences finalDataset/testing.all.cooccurrences) --knownConceptIDs finalDataset/trainingAndValidation.ids --num $negativeCount --outFile negativeData.testing
+```
 
+## Merge positive and negative data into one file
+
+We'll combine the positive and negative points into one file and keep track of the classes separately
+
+```bash
+awk ' { print $1"\t"$2"\t"0; }' negativeData.validation > combinedData.validation.tmp
+awk ' { print $1"\t"$2"\t"1; }' finalDataset/validation.subset.1000000.cooccurrences >> combinedData.validation.tmp
+
+awk ' { print $1"\t"$2"\t"0; }' negativeData.testing > combinedData.testing.tmp
+awk ' { print $1"\t"$2"\t"1; }' finalDataset/testing.all.subset.1000000.cooccurrences >> combinedData.testing.tmp
+
+sort -k1,1n -k2,2n combinedData.validation.tmp > combinedData.validation.shuffled
+sort -k1,1n -k2,2n combinedData.testing.tmp > combinedData.testing.shuffled
+
+cut -f 1,2 combinedData.validation.shuffled > combinedData.validation.coords
+cut -f 1,2 combinedData.testing.shuffled > combinedData.testing.coords
+
+cut -f 3 combinedData.validation.shuffled > combinedData.validation.classes
+cut -f 3 combinedData.testing.shuffled > combinedData.testing.classes
+
+rm combinedData.validation.tmp combinedData.validation.shuffled
+rm combinedData.testing.tmp combinedData.testing.shuffled
 ```
 
 ## Run Singular Value Decomposition
