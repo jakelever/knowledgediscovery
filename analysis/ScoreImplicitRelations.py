@@ -116,6 +116,11 @@ if __name__ == '__main__':
 		anniConceptVectors = np.fromfile(f,np.float32)
 		vectorSize = int(anniConceptVectors.shape[0] / len(anniVectorsIndex))
 		anniConceptVectors = anniConceptVectors.reshape((len(anniVectorsIndex),vectorSize))
+
+		#print "Normalising ANNI concept vectors"
+		#l2norm = np.sqrt((anniConceptVectors * anniConceptVectors).sum(axis=1))
+		#anniConceptVectors = anniConceptVectors / l2norm.reshape(anniConceptVectors.shape[0],1)
+
 		
 	
 	print "Loaded ANNI concept vectors"

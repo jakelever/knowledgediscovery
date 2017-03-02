@@ -47,7 +47,7 @@ colnames(meltedNegData) <- c("class","method","score")
 
 # Combine everything
 
-meltedData <- rbind(meltedNegData,meltedPosData,combinedData)
+meltedData <- rbind(meltedNegData,meltedPosData,combinedSVDData)
 meltedData$class <- as.factor(meltedData$class)
 
 
@@ -58,7 +58,7 @@ titles <- c("FACTA","BITOLA","ANNI","Arrowsmith","Jaccard","Preferential Attachm
 
 #stopifnot(length(names)==length(titles))
 
-tiff(outPlot, height = 8, width = 4, units = 'in')
+png(outPlot, height = 750, width = 500, units = 'px')
 cols <- 2
 rows <- ceiling(length(names)/cols)
 for (i in 1:length(names))
