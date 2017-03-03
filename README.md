@@ -292,7 +292,7 @@ The next is a comparison shown as Precision-Recall curves
 The next is a set of histograms comparing the different methods
 
 ```bash
-/gsc/software/linux-x86_64-centos6/R-3.3.2/bin/Rscript ../plots/scores_breakdown.R scores.testing.positive.svd scores.testing.negative.svd scores.testing.positive scores.testing.negative scores_breakdown.png
+/gsc/software/linux-x86_64-centos6/R-3.3.2/bin/Rscript ../plots/scores_breakdown.R scores.testing.svd scores.testing.other combinedData.testing.classes scores_breakdown.png
 ```
 
 The next is an analysis of the years after the split year
