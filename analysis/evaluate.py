@@ -4,8 +4,8 @@ import numpy as np
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='Evaluate a ranking algorithm given scores for positive and negative data and generate various statistics')
-	parser.add_argument('--positiveScores',required=True,type=str,help='File containing positive scores')
-	parser.add_argument('--negativeScores',required=True,type=str,help='File containing negative scores')
+	parser.add_argument('--scores',required=True,type=str,help='File containing scores')
+	parser.add_argument('--classes',required=True,type=str,help='File containing classes (0=negative,1=positive)')
 	parser.add_argument('--classBalance',required=True,type=float,help='Fraction of data that is expected to be positive')
 	parser.add_argument('--analysisName',required=True,type=str,help='Name of this analysis for output data')
 	args = parser.parse_args()
@@ -15,17 +15,18 @@ if __name__ == '__main__':
 	oneMinusCB = 1.0 - cb
 
 	# Load the scores
-	with open(args.positiveScores) as f:
-		positiveScores = [ float(line.strip()) for line in f ]
-	with open(args.negativeScores) as f:
-		negativeScores = [ float(line.strip()) for line in f ]
-	positiveCount = len(positiveScores)
-	negativeCount = len(negativeScores)
+	with open(args.scores) as f:
+		scores = [ float(line.strip()) for line in f ]
+	with open(args.classes) as f:
+		classes = [ (line.strip()!='0') for line in f ]
+
+	positiveCount = sum(classes)
+	negativeCount = len(classes) - positiveCount
 
 	# We combined the score data with boolean to track whether its associated with a positive or negative
 	# class. We then sort them by the threshold
 	# Note that we sort in reverse.
-	combinedScores = [ (x,False) for x in negativeScores ] + [ (x,True) for x in positiveScores ]
+	combinedScores = list(zip(scores,classes))
 	combinedScores = sorted(combinedScores,reverse=True)
 
 	# First we want to find all the places that the score actually changes. These are the points where we'll calculate

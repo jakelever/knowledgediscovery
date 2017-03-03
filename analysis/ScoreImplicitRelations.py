@@ -73,7 +73,8 @@ if __name__ == '__main__':
 	entitiesToScore = set()
 	with open(args.relationsToScore) as f:
 		for line in f:
-			x,y,_ = map(int,line.strip().split())
+			split = map(int,line.strip().split())
+			x,y = split[:2]
 			relationsToScore.add((x,y))
 			entitiesToScore.add(x)
 			entitiesToScore.add(y)
