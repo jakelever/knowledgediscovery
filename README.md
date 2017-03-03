@@ -185,11 +185,9 @@ maxSV=500
 numThreads=16
 
 mkdir svd.crossvalidation
-seq $minSV $maxSV | xargs -I NSV -P $numThreads python ../analysis/calcSVDScores.py --svdU svd.training.U --svdV svd.training.V --svdSV svd.training.SV --relationsToScore finalDataset/validation.subset.1000000.cooccurrences --sv NSV --outFile svd.crossvalidation/positive.NSV
+seq $minSV $maxSV | xargs -I NSV -P $numThreads python ../analysis/calcSVDScores.py --svdU svd.training.U --svdV svd.training.V --svdSV svd.training.SV --relationsToScore combinedData.validation.coords --sv NSV --outFile svd.crossvalidation/scores.NSV
 
-seq $minSV $maxSV | xargs -I NSV -P $numThreads python ../analysis/calcSVDScores.py --svdU svd.training.U --svdV svd.training.V --svdSV svd.training.SV --relationsToScore negativeData.validation --sv NSV --outFile svd.crossvalidation/negative.NSV
-
-seq $minSV $maxSV | xargs -I NSV -P $numThreads bash -c "python ../analysis/evaluate.py --positiveScores <(cut -f 3 svd.crossvalidation/positive.NSV) --negativeScores <(cut -f 3 svd.crossvalidation/negative.NSV) --classBalance $validation_classBalance --analysisName NSV > svd.crossvalidation/results.NSV"
+seq $minSV $maxSV | xargs -I NSV -P $numThreads bash -c "python ../analysis/evaluate.py --scores <(cut -f 3 svd.crossvalidation/scores.NSV) --classes combinedData.validation.coords --classBalance $validation_classBalance --analysisName NSV > svd.crossvalidation/results.NSV"
 
 cat svd.crossvalidation/results.* > svd.results
 ```
@@ -211,20 +209,16 @@ optimalThreshold=`cat parameters.threshold`
 
 ## Calculate scores for positive & negative relationships
 
-For positive and negative
+Calculate the scores for the SVD method
 
 ```bash
-python ../analysis/ScoreImplicitRelations.py --cooccurrenceFile finalDataset/trainingAndValidation.cooccurrences --occurrenceFile finalDataset/trainingAndValidation.occurrences --sentenceCount finalDataset/trainingAndValidation.sentenceCounts --relationsToScore finalDataset/testing.all.subset.1000000.cooccurrences --anniVectors anni.trainingAndValidation.vectors --anniVectorsIndex anni.trainingAndValidation.index --outFile scores.testing.positive
-
-python ../analysis/ScoreImplicitRelations.py --cooccurrenceFile finalDataset/trainingAndValidation.cooccurrences --occurrenceFile finalDataset/trainingAndValidation.occurrences --sentenceCount finalDataset/trainingAndValidation.sentenceCounts --relationsToScore negativeData.testing --anniVectors anni.trainingAndValidation.vectors --anniVectorsIndex anni.trainingAndValidation.index --outFile scores.testing.negative
+python ../analysis/calcSVDScores.py --svdU svd.trainingAndValidation.U --svdV svd.trainingAndValidation.V --svdSV svd.trainingAndValidation.SV --relationsToScore combinedData.testing.coords --outFile scores.testing.svd --sv $optimalSV
 ```
 
-For SVD
+Calculate the scores for the other methods
 
 ```bash
-python ../analysis/calcSVDScores.py --svdU svd.trainingAndValidation.U --svdV svd.trainingAndValidation.V --svdSV svd.trainingAndValidation.SV --relationsToScore finalDataset/testing.all.subset.1000000.cooccurrences --outFile scores.testing.positive.svd --sv $optimalSV
-  
-python ../analysis/calcSVDScores.py --svdU svd.trainingAndValidation.U --svdV svd.trainingAndValidation.V --svdSV svd.trainingAndValidation.SV --relationsToScore negativeData.testing --outFile scores.testing.negative.svd --sv $optimalSV
+python ../analysis/ScoreImplicitRelations.py --cooccurrenceFile finalDataset/trainingAndValidation.cooccurrences --occurrenceFile finalDataset/trainingAndValidation.occurrences --sentenceCount finalDataset/trainingAndValidation.sentenceCounts --relationsToScore combinedData.testing.coords --anniVectors anni.trainingAndValidation.vectors --anniVectorsIndex anni.trainingAndValidation.index --outFile scores.testing.other
 ```
 
 ## Generate precision/recall curves for each method with associated statistics
@@ -240,19 +234,19 @@ testing_classBalance=`echo "$testing_testCount / (($testing_termCount*($testing_
 Then we run evaluate on the separate columns of the score file
 
 ```bash
-python ../analysis/evaluate.py --positiveScores <(cut -f 3 scores.testing.positive.svd) --negativeScores <(cut -f 3 scores.testing.negative.svd) --classBalance $testing_classBalance --analysisName "SVD_$optimalSV" >> curves.all
+python ../analysis/evaluate.py --scores <(cut -f 3 scores.testing.svd) --classes combinedData.testing.classes --classBalance $testing_classBalance --analysisName "SVD_$optimalSV" >> curves.all
 
-python ../analysis/evaluate.py --positiveScores <(cut -f 3 scores.testing.positive) --negativeScores <(cut -f 3 scores.testing.negative) --classBalance $testing_classBalance --analysisName factaPlus >> curves.all
+python ../analysis/evaluate.py --scores <(cut -f 3 scores.testing.other) --classes combinedData.testing.classes --classBalance $testing_classBalance --analysisName factaPlus >> curves.all
 
-python ../analysis/evaluate.py --positiveScores <(cut -f 4 scores.testing.positive) --negativeScores <(cut -f 4 scores.testing.negative) --classBalance $testing_classBalance --analysisName bitola >> curves.all
+python ../analysis/evaluate.py --scores <(cut -f 4 scores.testing.other) --classes combinedData.testing.classes --classBalance $testing_classBalance --analysisName bitola >> curves.all
 
-python ../analysis/evaluate.py --positiveScores <(cut -f 5 scores.testing.positive) --negativeScores <(cut -f 5 scores.testing.negative) --classBalance $testing_classBalance --analysisName anni >> curves.all
+python ../analysis/evaluate.py --scores <(cut -f 5 scores.testing.other) --classes combinedData.testing.classes --classBalance $testing_classBalance --analysisName anni >> curves.all
 
-python ../analysis/evaluate.py --positiveScores <(cut -f 6 scores.testing.positive) --negativeScores <(cut -f 6 scores.testing.negative) --classBalance $testing_classBalance --analysisName arrowsmith >> curves.all
+python ../analysis/evaluate.py --scores <(cut -f 6 scores.testing.other) --classes combinedData.testing.classes --classBalance $testing_classBalance --analysisName arrowsmith >> curves.all
 
-python ../analysis/evaluate.py --positiveScores <(cut -f 7 scores.testing.positive) --negativeScores <(cut -f 7 scores.testing.negative) --classBalance $testing_classBalance --analysisName jaccard >> curves.all
+python ../analysis/evaluate.py --scores <(cut -f 7 scores.testing.other) --classes combinedData.testing.classes --classBalance $testing_classBalance --analysisName jaccard >> curves.all
 
-python ../analysis/evaluate.py --positiveScores <(cut -f 8 scores.testing.positive) --negativeScores <(cut -f 8 scores.testing.negative) --classBalance $testing_classBalance --analysisName preferentialAttachment  >> curves.all
+python ../analysis/evaluate.py --scores <(cut -f 8 scores.testing.other) --classes combinedData.testing.classes --classBalance $testing_classBalance --analysisName preferentialAttachment  >> curves.all
 ```
 
 Then we finally calculate the area under the precision recall curve for each method.
