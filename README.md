@@ -280,25 +280,25 @@ done
 Lastly we plot the figures used in the paper. The first is a comparison of the different methods.
 
 ```bash
-/gsc/software/linux-x86_64-centos6/R-3.3.2/bin/Rscript ../plots/comparison.R curves.stats comparison.png
+/gsc/software/linux-x86_64-centos6/R-3.3.2/bin/Rscript ../plots/comparison.R curves.stats figure_comparison.png
 ```
 
 The next is a comparison shown as Precision-Recall curves
 
 ```bash
-/gsc/software/linux-x86_64-centos6/R-3.3.2/bin/Rscript ../plots/PRcurves.R curves.all PRcurve.png
+/gsc/software/linux-x86_64-centos6/R-3.3.2/bin/Rscript ../plots/PRcurves.R curves.all figure_PRcurve.png
 ```
 
 The next is a set of histograms comparing the different methods
 
 ```bash
-/gsc/software/linux-x86_64-centos6/R-3.3.2/bin/Rscript ../plots/scores_breakdown.R scores.testing.svd scores.testing.other combinedData.testing.classes scores_breakdown.png
+/gsc/software/linux-x86_64-centos6/R-3.3.2/bin/Rscript ../plots/scores_breakdown.R scores.testing.svd scores.testing.other combinedData.testing.classes figure_scores.png
 ```
 
 The next is an analysis of the years after the split year
 
 ```bash
-/gsc/software/linux-x86_64-centos6/R-3.3.2/bin/Rscript ../plots/yearByYear.R yearByYear.results yearByYear.png
+/gsc/software/linux-x86_64-centos6/R-3.3.2/bin/Rscript ../plots/yearByYear.R yearByYear.results figure_yearByYear.png
 ```
 
 ## Make Predictions for Alzheimer's and Parkinson's Disease
