@@ -69,16 +69,15 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 
 	print "Loading relationsToScore"
-	relationsToScore = set()
+	relationsToScore = []
 	entitiesToScore = set()
 	with open(args.relationsToScore) as f:
 		for line in f:
 			split = map(int,line.strip().split())
 			x,y = split[:2]
-			relationsToScore.add((x,y))
+			relationsToScore.append((x,y))
 			entitiesToScore.add(x)
 			entitiesToScore.add(y)
-	relationsToScore = sorted(list(relationsToScore))
 	entitiesToScore = sorted(list(entitiesToScore))
 	print "Loaded relationsToScore"
 

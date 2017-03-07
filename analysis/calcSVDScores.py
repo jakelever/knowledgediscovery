@@ -53,15 +53,12 @@ if __name__ == '__main__':
 
 	if args.relationsToScore:
 		print "Loading relations to score..."
-		relationsToScore = set()
+		relationsToScore = []
 		with open(args.relationsToScore) as f:
 			for line in f:
 				x,y = line.strip().split()[0:2]
 				x,y = int(x),int(y)
-				if x > y:
-					x,y = y,x
-				relationsToScore.add((x,y))
-		relationsToScore = sorted(list(relationsToScore))
+				relationsToScore.append((x,y))
 		iterator = relationsToScore
 	elif args.idsFileA and args.idsFileB:
 		print "Loading IDs for scoring..."
