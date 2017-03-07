@@ -18,7 +18,11 @@ if __name__ == '__main__':
 	with open(args.scores) as f:
 		scores = [ float(line.strip()) for line in f ]
 	with open(args.classes) as f:
-		classes = [ (line.strip()!='0') for line in f ]
+		classes = [ int(line.strip()) for line in f ]
+		assert min(classes) == 0 and max(classes) == 1, 'Classes file must be a set of binary values (0 or 1) denoting classes'
+
+		# Turn them into boolean balues
+		classes = [ bool(c) for c in classes ]
 
 	positiveCount = sum(classes)
 	negativeCount = len(classes) - positiveCount
