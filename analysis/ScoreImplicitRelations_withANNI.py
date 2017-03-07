@@ -202,11 +202,11 @@ if __name__ == '__main__':
 			if (i%10000) == 0:
 				print i
 			factaPlusScore = calculateFactaPlusScore(x,z,neighbours,cooccurrences,occurrences)
-			bitolaScore = calculateBitolaScore(x,y,neighbours,cooccurrences,occurrences)
-			anniScore = calculateANNIScore(x,y,anniConceptVectors)
-			arrowsmithScore = calculateArrowsmithScore(x,y,neighbours,cooccurrences,occurrences)
-			jaccardScore = calculateJaccardIndex(x,y,neighbours,cooccurrences,occurrences)
-			preferentialAttachmentScore = calculatePreferentialAttachment(x,y,neighbours,cooccurrences,occurrences)
+			bitolaScore = calculateBitolaScore(x,z,neighbours,cooccurrences,occurrences)
+			anniScore = calculateANNIScore(x,z,anniConceptVectors)
+			arrowsmithScore = calculateArrowsmithScore(x,z,neighbours,cooccurrences,occurrences)
+			jaccardScore = calculateJaccardIndex(x,z,neighbours,cooccurrences,occurrences)
+			preferentialAttachmentScore = calculatePreferentialAttachment(x,z,neighbours,cooccurrences,occurrences)
 
 			#outData = [x,z,factaPlusScore,bitolaScore,anniScore,arrowsmithScore,jaccardScore,preferentialAttachmentScore]
 			outData = [x,z,anniScore]
