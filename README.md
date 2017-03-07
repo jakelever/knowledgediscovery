@@ -187,7 +187,7 @@ numThreads=16
 mkdir svd.crossvalidation
 seq $minSV $maxSV | xargs -I NSV -P $numThreads python ../analysis/calcSVDScores.py --svdU svd.training.U --svdV svd.training.V --svdSV svd.training.SV --relationsToScore combinedData.validation.coords --sv NSV --outFile svd.crossvalidation/scores.NSV
 
-seq $minSV $maxSV | xargs -I NSV -P $numThreads bash -c "python ../analysis/evaluate.py --scores <(cut -f 3 svd.crossvalidation/scores.NSV) --classes combinedData.validation.coords --classBalance $validation_classBalance --analysisName NSV > svd.crossvalidation/results.NSV"
+seq $minSV $maxSV | xargs -I NSV -P $numThreads bash -c "python ../analysis/evaluate.py --scores <(cut -f 3 svd.crossvalidation/scores.NSV) --classes combinedData.validation.classes --classBalance $validation_classBalance --analysisName NSV > svd.crossvalidation/results.NSV"
 
 cat svd.crossvalidation/results.* > svd.results
 ```
