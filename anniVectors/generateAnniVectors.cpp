@@ -263,10 +263,10 @@ int main(int argc, char** argv)
 				
 				tmpData[j] = Uvalue;
 
-				norm2 += Uvalue;
+				norm2 += Uvalue*Uvalue;
 			}
 
-			int normalize = 0;
+			int normalize = 1;
 
 			if (normalize == 1)
 			{
