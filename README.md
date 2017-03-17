@@ -181,7 +181,7 @@ cat svd.crossvalidation/results.* > svd.results
 Then we calculate the Area under the Precision Recall curve for each # of singular values and find the optimal value
 
 ```bash
-/gsc/software/linux-x86_64/python-2.7.5/bin/python ../analysis/statsCalculator.py --evaluationFile svd.results > curves.svd
+python ../analysis/statsCalculator.py --evaluationFile svd.results > curves.svd
 sort -k3,3g curves.svd | tail -n 1 | cut -f 1 > parameters.sv
 optimalSV=`cat parameters.sv`
 ```
@@ -238,7 +238,7 @@ python ../analysis/evaluate.py --scores <(cut -f 8 scores.testing.other) --class
 Then we finally calculate the area under the precision recall curve for each method.
 
 ```bash
-/gsc/software/linux-x86_64/python-2.7.5/bin/python ../analysis/statsCalculator.py --evaluationFile curves.all > curves.stats
+python ../analysis/statsCalculator.py --evaluationFile curves.all > curves.stats
 ```
 
 ## Calculate Predictions for Following Years
