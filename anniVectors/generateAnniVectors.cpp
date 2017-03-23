@@ -244,6 +244,8 @@ int main(int argc, char** argv)
 		printf("seen_size=%d\n",seen_size);
 		
 		double *allTmpData = (double*)malloc(omp_get_max_threads()*seen_size*sizeof(double));
+
+		float *buffer = (float*)malloc(seen_size*sizeof(float));
 		
 		int complete = 0;
 		#pragma omp parallel for
@@ -302,8 +304,12 @@ int main(int argc, char** argv)
 					printf("%s : %d / %d\n", timebuffer, complete, vectorsToCalculate_array_size);
 				}
 				
+				for ( int j=0; j<seen_size; j++ )
+					buffer[j] = (float)tmpData[j];
+
 				fprintf(outIndexFile,"%d\n", v1);
-				fwrite(tmpData, sizeof(double), seen_size, outVectorFile);
+				//fwrite(tmpData, sizeof(double), seen_size, outVectorFile);
+				fwrite(buffer, sizeof(float), seen_size, outVectorFile);
 				complete++;
 			}
 			

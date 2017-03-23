@@ -128,7 +128,7 @@ if __name__ == '__main__':
 		anniVectorsIndex = { int(line.strip()):i for i,line in enumerate(f) }
 	
 	with open(args.anniVectors,'rb') as f:
-		anniConceptVectors = np.fromfile(f,np.float64)
+		anniConceptVectors = np.fromfile(f,np.float32)
 		vectorSize = int(anniConceptVectors.shape[0] / len(anniVectorsIndex))
 		anniConceptVectors = anniConceptVectors.reshape((len(anniVectorsIndex),vectorSize))
 
