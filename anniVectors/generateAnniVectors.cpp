@@ -280,7 +280,7 @@ int main(int argc, char** argv)
 				norm2 += Uvalue*Uvalue;
 			}
 
-			int normalize = 1;
+			int normalize = 0;
 
 			if (normalize == 1)
 			{

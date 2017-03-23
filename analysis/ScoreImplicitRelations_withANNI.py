@@ -127,8 +127,8 @@ def prepareANNIConceptVectors(entitiesToScore,neighbours,cooccurrences,occurrenc
 	for i,x in enumerate(entitiesToScore):
 		conceptVector = [ U(x,y,cooccurrences,occurrences,sentenceCount) for y in allEntities ]
 		
-		norm = sqrt(sum([ a*a for a in conceptVector ]))
-		conceptVector = [ a/norm for a in conceptVector ]
+		#norm = sqrt(sum([ a*a for a in conceptVector ]))
+		#conceptVector = [ a/norm for a in conceptVector ]
 		
 		conceptVectors[i,:] = np.array(conceptVector)
 		#conceptVectorsIndex.append(x)
