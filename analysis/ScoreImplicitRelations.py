@@ -23,6 +23,21 @@ def calculateFactaPlusScore(x,z,neighbours,cooccurrences,occurrences):
 		product *= tmp
 	return 1.0 - product
 
+def calculateAverageMinimumWeight(x,z,neighbours,cooccurrences,occurrences):
+	shared = neighbours[x].intersection(neighbours[z])
+	if len(shared) == 0:
+		return 0
+
+	total = 0.0
+	for y in shared:
+		total += min(cooccurrences[(x,y)],cooccurrences[(y,z)])
+	return total / float(len(shared))
+
+def calculateLinkingTermCountwithAMW(x,z,neighbours,cooccurrences,occurrences):
+	linkingTermCount = calculateArrowsmithScore(x,z,neighbours,cooccurrences,occurrences)
+	amw = calculateAverageMinimumWeight(x,z,neighbours,cooccurrences,occurrences)
+	return 1000.0 * linkingTermCount + 0.001 * amw
+
 def calculateBitolaScore(x,z,neighbours,cooccurrences,occurrences):
 	shared = neighbours[x].intersection(neighbours[z])
 	total = 0
@@ -136,8 +151,11 @@ if __name__ == '__main__':
 			arrowsmithScore = calculateArrowsmithScore(x,z,neighbours,cooccurrences,occurrences)
 			jaccardScore = calculateJaccardIndex(x,z,neighbours,cooccurrences,occurrences)
 			preferentialAttachmentScore = calculatePreferentialAttachment(x,z,neighbours,cooccurrences,occurrences)
+			
+			amwScore = calculateAverageMinimumWeight(x,z,neighbours,cooccurrences,occurrences)
+			ltc_amwScore = calculateLinkingTermCountwithAMW(x,z,neighbours,cooccurrences,occurrences)
 
-			outData = [x,z,factaPlusScore,bitolaScore,anniScore,arrowsmithScore,jaccardScore,preferentialAttachmentScore]
+			outData = [x,z,factaPlusScore,bitolaScore,anniScore,arrowsmithScore,jaccardScore,preferentialAttachmentScore,amwScore,ltc_amwScore]
 			outLine = "\t".join(map(str,outData))
 			outF.write(outLine+"\n")
 
