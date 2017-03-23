@@ -13,15 +13,13 @@ if __name__ == '__main__':
 		anniVectorsIndex = { int(line.strip()):i for i,line in enumerate(f) }
 
 	with open(args.anniVectors,'rb') as f:
-		anniConceptVectors = np.fromfile(f,np.float32)
+		anniConceptVectors = np.fromfile(f,np.float64)
 		vectorSize = int(anniConceptVectors.shape[0] / len(anniVectorsIndex))
 		anniConceptVectors = anniConceptVectors.reshape((len(anniVectorsIndex),vectorSize))
 
 	print "Saving ANNI vectors..."
-	conceptIDs = [ (index,i) for i,index in enumerate(anniVectorsIndex) ]
-	conceptIDs = sorted(conceptIDs)
 	with open(args.outFile,'w') as outF:
-		for conceptID,row in conceptIDs:
+		for conceptID,row in anniVectorsIndex.iteritems():
 			outData = [conceptID] + anniConceptVectors[row,:].tolist()
 			outLine = "\t".join(map(str,outData))
 			outF.write(outLine+"\n")
