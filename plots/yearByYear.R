@@ -13,6 +13,6 @@ data$recall <- data$predicted/data$total
 
 
 png(outPlot)
-barchart( recall ~ year, data, horizontal=F, ylim=c(0,1.1*max(data$recall)), col="black")
+barchart( recall ~ year, data, horizontal=F, ylim=c(0,1.1*max(data$recall)), col="black",xlab="Year for Test Data",ylab="Recall")
 dev.off()
 
