@@ -143,7 +143,7 @@ double U(int i, int j,
 	if (denominator != 0)
 		score = numerator/denominator;
 
-	if (i==1153)
+	/*if (i==1153)
 	{
 
 		auto key = std::make_tuple ( min(i,j), max(i,j) );
@@ -155,7 +155,7 @@ double U(int i, int j,
 		int occurrence_j = (*occurrences)[j];
 
 		//printf("DEBUG\t%d\t%d\t%d\t%d\t%d\t%f\n",i,j,occurrence_i,occurrence_j,cooccurrence_ij,score);
-	}
+	}*/
 	
 	//printf("H2score=%f numerator=%f denominator=%f\n", H2score,numerator,denominator);
 

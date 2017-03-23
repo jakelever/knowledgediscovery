@@ -35,9 +35,10 @@ meltedData$class <- as.factor(meltedData$class)
 
 # And plot everything
 
-names <- c("factaPlusScore","bitolaScore","anniScore","arrowsmithScore","jaccardScore","preferentialAttachmentScore","svdScore")
-titles <- c("FACTA","BITOLA","ANNI","Arrowsmith","Jaccard","Preferential Attachment","SVD")
-
+#names <- c("factaPlusScore","bitolaScore","anniScore","arrowsmithScore","jaccardScore","preferentialAttachmentScore","svdScore")
+#titles <- c("FACTA","BITOLA","ANNI","Arrowsmith","Jaccard","Preferential Attachment","SVD")
+names <- c("anniScore","arrowsmithScore","bitolaScore","factaPlusScore","jaccardScore","preferentialAttachmentScore","svdScore")
+titles <- c("ANNI","Arrowsmith","BITOLA","FACTA+","Jaccard","Preferential Attachment","SVD")
 #stopifnot(length(names)==length(titles))
 
 png(outPlot, height = 750, width = 500, units = 'px')
