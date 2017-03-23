@@ -1,6 +1,6 @@
 import argparse
-from math import log
-from collections import defaultdict
+from math import log,sqrt
+from collections import defaultdict,Counter
 
 from multiprocessing import Pool,Manager
 from functools import partial
@@ -92,13 +92,16 @@ def U(i,j,cooccurrences,occurrences,sentenceCount):
 	numerator = H_i + H_j - H_i_j
 	denominator = 0.5 * (H_i + H_j)
 
-	if (i<10 and j<10):
-		print "DEBUG\t%d\t%d\t%f\t%f\t%f\t%f\t%f\t%f" % (i,j,H_i,H_j,H_i_j,numerator,denominator,numerator/denominator)
-	
-	if denominator == 0:
-		return 0.0
-	else:
-		return numerator/denominator
+	score = 0.0
+	if denominator != 0:
+		score = numerator/denominator
+
+	if (i==1153):
+		#outData = ["DEBUG",i,j,occurrences[i],occurrences[j],cooccurrences[(i,j)],score]
+		outData = ["DEBUG",i,j,H_i,H_j,H_i_j,score]
+		print "\t".join(map(str,outData))
+
+	return score
 
 def calcANNIVector(allEntities,cooccurrences,occurrences,sentenceCount,queue,x):
 	try:
@@ -120,6 +123,8 @@ def prepareANNIConceptVectors(entitiesToScore,neighbours,cooccurrences,occurrenc
 	conceptVectors = {}
 	for x in entitiesToScore:
 		conceptVectors[x] = [ U(x,y,cooccurrences,occurrences,sentenceCount) for y in allEntities ]
+		norm = sqrt(sum([ a*a for a in conceptVectors[x] ]))
+		conceptVectors[x] = [ a/norm for a in conceptVectors[x] ]
 
 	return conceptVectors
 				
@@ -171,7 +176,8 @@ if __name__ == '__main__':
 	print "Loaded occurrences"
 
 	print "Loading cooccurrences..."
-	cooccurrences = {}
+	#cooccurrences = {}
+	cooccurrences = Counter()
 	neighbours = defaultdict(set)
 	with open(args.cooccurrenceFile) as f:
 		for line in f:
@@ -201,12 +207,12 @@ if __name__ == '__main__':
 		for i,(x,z) in enumerate(relationsToScore):
 			if (i%10000) == 0:
 				print i
-			factaPlusScore = calculateFactaPlusScore(x,z,neighbours,cooccurrences,occurrences)
-			bitolaScore = calculateBitolaScore(x,z,neighbours,cooccurrences,occurrences)
+			#factaPlusScore = calculateFactaPlusScore(x,z,neighbours,cooccurrences,occurrences)
+			#bitolaScore = calculateBitolaScore(x,z,neighbours,cooccurrences,occurrences)
 			anniScore = calculateANNIScore(x,z,anniConceptVectors)
-			arrowsmithScore = calculateArrowsmithScore(x,z,neighbours,cooccurrences,occurrences)
-			jaccardScore = calculateJaccardIndex(x,z,neighbours,cooccurrences,occurrences)
-			preferentialAttachmentScore = calculatePreferentialAttachment(x,z,neighbours,cooccurrences,occurrences)
+			#arrowsmithScore = calculateArrowsmithScore(x,z,neighbours,cooccurrences,occurrences)
+			#jaccardScore = calculateJaccardIndex(x,z,neighbours,cooccurrences,occurrences)
+			#preferentialAttachmentScore = calculatePreferentialAttachment(x,z,neighbours,cooccurrences,occurrences)
 
 			#outData = [x,z,factaPlusScore,bitolaScore,anniScore,arrowsmithScore,jaccardScore,preferentialAttachmentScore]
 			outData = [x,z,anniScore]
