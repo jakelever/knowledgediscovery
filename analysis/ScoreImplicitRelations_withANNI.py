@@ -8,6 +8,7 @@ from contextlib import closing
 import time
 import logging
 import sys
+import numpy as np
 
 def D(v,w,cooccurrences,occurrences):
 	p1 = cooccurrences[(v,w)] / float(occurrences[v])
@@ -96,10 +97,10 @@ def U(i,j,cooccurrences,occurrences,sentenceCount):
 	if denominator != 0:
 		score = numerator/denominator
 
-	if (i==1153):
-		#outData = ["DEBUG",i,j,occurrences[i],occurrences[j],cooccurrences[(i,j)],score]
-		outData = ["DEBUG",i,j,H_i,H_j,H_i_j,score]
-		print "\t".join(map(str,outData))
+	#if (i==1153):
+	#	#outData = ["DEBUG",i,j,occurrences[i],occurrences[j],cooccurrences[(i,j)],score]
+	#	outData = ["DEBUG",i,j,H_i,H_j,H_i_j,score]
+	#	print "\t".join(map(str,outData))
 
 	return score
 
@@ -120,21 +121,33 @@ def prepareANNIConceptVectors(entitiesToScore,neighbours,cooccurrences,occurrenc
 	allEntities = sorted(list(occurrences.keys()))
 	#conceptVectors = { x: [ U(x,y,cooccurrences,occurrences,sentenceCount) for y in allEntities ] for x in entitiesToScore }
 	
-	conceptVectors = {}
-	for x in entitiesToScore:
-		conceptVectors[x] = [ U(x,y,cooccurrences,occurrences,sentenceCount) for y in allEntities ]
-		norm = sqrt(sum([ a*a for a in conceptVectors[x] ]))
-		conceptVectors[x] = [ a/norm for a in conceptVectors[x] ]
+	#conceptVectors = {}
+	conceptVectors = np.zeros((len(entitiesToScore),len(allEntities)), np.float64)
+	#conceptVectorsIndex = []
+	for i,x in enumerate(entitiesToScore):
+		conceptVector = [ U(x,y,cooccurrences,occurrences,sentenceCount) for y in allEntities ]
+		
+		norm = sqrt(sum([ a*a for a in conceptVector ]))
+		conceptVector = [ a/norm for a in conceptVector ]
+		
+		conceptVectors[i,:] = np.array(conceptVector)
+		#conceptVectorsIndex.append(x)
 
-	return conceptVectors
+	conceptVectorsIndex = { x:i for i,x in enumerate(entitiesToScore) }
+		
+	return conceptVectors,conceptVectorsIndex
 				
-def calculateANNIScore(x,z,conceptVectors):
-	vectorX = conceptVectors[x]
-	vectorZ = conceptVectors[z]
+def calculateANNIScore(x,z,conceptVectors,conceptVectorsIndex):
+	indexX = conceptVectorsIndex[x]
+	indexZ = conceptVectorsIndex[z]
+
+	vectorX = conceptVectors[indexX,:]
+	vectorZ = conceptVectors[indexZ,:]
 	#entities = vectorX.keys().intersection(vectorZ.keys())
 	#dotprod = sum( [ vectorX[e]*vectorZ[e] for e in entities ] )
-	assert len(vectorX) == len(vectorZ)
-	dotprod = sum( [ i*j for i,j in zip(vectorX,vectorZ) ] )
+	#assert len(vectorX) == len(vectorZ)
+	#dotprod = sum( [ i*j for i,j in zip(vectorX,vectorZ) ] )
+	dotprod = np.dot(vectorX,vectorZ)
 	return dotprod
 
 if __name__ == '__main__':
@@ -189,15 +202,15 @@ if __name__ == '__main__':
 	print "Loaded cooccurrences"
 
 	print "Preparing ANNI concept vectors..."
-	anniConceptVectors = prepareANNIConceptVectors(entitiesToScore,neighbours,cooccurrences,occurrences,sentenceCount)
+	anniConceptVectors,anniConceptVectorsIndex = prepareANNIConceptVectors(entitiesToScore,neighbours,cooccurrences,occurrences,sentenceCount)
 	print "Prepared ANNI concept vectors"
 
 	if args.outANNIVectors:
 		print "Saving ANNI vectors..."
-		conceptIDs = sorted(anniConceptVectors.keys())
+		#conceptIDs = sorted(anniConceptVectors.keys())
 		with open(args.outANNIVectors,'w') as outF:
-			for conceptID in conceptIDs:
-				outData = [conceptID] + anniConceptVectors[conceptID]
+			for conceptID,row in anniConceptVectorsIndex.iteritems():
+				outData = [conceptID] + anniConceptVectors[row,:].tolist()
 				outLine = "\t".join(map(str,outData))
 				outF.write(outLine+"\n")
 		print "Saved ANNI vectors"
@@ -209,7 +222,7 @@ if __name__ == '__main__':
 				print i
 			#factaPlusScore = calculateFactaPlusScore(x,z,neighbours,cooccurrences,occurrences)
 			#bitolaScore = calculateBitolaScore(x,z,neighbours,cooccurrences,occurrences)
-			anniScore = calculateANNIScore(x,z,anniConceptVectors)
+			anniScore = calculateANNIScore(x,z,anniConceptVectors,anniConceptVectorsIndex)
 			#arrowsmithScore = calculateArrowsmithScore(x,z,neighbours,cooccurrences,occurrences)
 			#jaccardScore = calculateJaccardIndex(x,z,neighbours,cooccurrences,occurrences)
 			#preferentialAttachmentScore = calculatePreferentialAttachment(x,z,neighbours,cooccurrences,occurrences)
