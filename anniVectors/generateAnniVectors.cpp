@@ -29,44 +29,6 @@
 #define min(a,b) (a<b ? (a) : (b))
 #define max(a,b) (a>b ? (a) : (b))
 
-enum ScoringMethods { SVDDecomposition, ALSDecomposition, TransE, TransH, Jaccard, CommonNeighbours, PreferentialAttachment, Random, None };
-
-struct Data
-{
-	double* u; 
-	double* v;
-	double* sv;
-	int nsv;
-	int subnsv;
-	int numD;
-	std::vector<int> *neighbours;
-	
-	double* transE_Entities;
-	double* transE_Relations;
-	
-	double* transH_Entities;
-	double* transH_Hyperplanes;
-	double* transH_Relations;
-	
-	Data() {
-		u = 0;
-		v = 0;
-		sv = 0;
-		nsv = 0;
-		subnsv = 0;
-		numD = 0;
-		neighbours = 0;
-		
-		transE_Entities = 0;
-		transE_Relations = 0;
-		
-		transH_Entities = 0;
-		transH_Hyperplanes = 0;
-		transH_Relations = 0;
-	}
-};
-
-
 double H1(int i, 
 		std::unordered_map<int,int> *occurrences, 
 		int sentenceCount)
@@ -92,38 +54,17 @@ double H2(int i, int j,
 	double N_j = (double)(*occurrences)[j];
 	double N = (double)sentenceCount;
 
-	int useOld = 0;
+	double score = 0.0;
+	if (N_ij != 0)
+		score += -(N_ij/N) * log(N_ij/N);
+	if ((N_j-N_ij) != 0)
+		score += - ((N_j-N_ij)/N) * log((N_j-N_ij)/N);
+	if ((N_i-N_ij) != 0)
+		score += - ((N_i-N_ij)/N) * log((N_i-N_ij)/N);
+	if ((N-N_j-N_i) != 0)
+		score += - ((N-N_j-N_i)/N) * log((N-N_j-N_i)/N);
 
-	if (useOld == 1)
-	{
-
-		if (N_ij==0 || (N_j-N_ij)==0 || (N_i-N_ij)==0 || (N-N_j-N_i)==0)
-		{
-			return 0.0;
-		}
-		else
-		{
-			double score = -(N_ij/N) * log(N_ij/N);
-			score += - ((N_j-N_ij)/N) * log((N_j-N_ij)/N);
-			score += - ((N_i-N_ij)/N) * log((N_i-N_ij)/N);
-			score += - ((N-N_j-N_i)/N) * log((N-N_j-N_i)/N);
-			return score;
-		}
-	}
-	else
-	{
-		double score = 0.0;
-		if (N_ij != 0)
-			score += -(N_ij/N) * log(N_ij/N);
-		if ((N_j-N_ij) != 0)
-			score += - ((N_j-N_ij)/N) * log((N_j-N_ij)/N);
-		if ((N_i-N_ij) != 0)
-			score += - ((N_i-N_ij)/N) * log((N_i-N_ij)/N);
-		if ((N-N_j-N_i) != 0)
-			score += - ((N-N_j-N_i)/N) * log((N-N_j-N_i)/N);
-
-		return score;
-	}
+	return score;
 }
 
 double U(int i, int j, 
