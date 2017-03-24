@@ -233,6 +233,10 @@ python ../analysis/evaluate.py --scores <(cut -f 6 scores.testing.other) --class
 python ../analysis/evaluate.py --scores <(cut -f 7 scores.testing.other) --classes combinedData.testing.classes --classBalance $testing_classBalance --analysisName jaccard >> curves.all
 
 python ../analysis/evaluate.py --scores <(cut -f 8 scores.testing.other) --classes combinedData.testing.classes --classBalance $testing_classBalance --analysisName preferentialAttachment  >> curves.all
+
+python ../analysis/evaluate.py --scores <(cut -f 9 scores.testing.other) --classes combinedData.testing.classes --classBalance $testing_classBalance --analysisName amw  >> curves.all
+
+python ../analysis/evaluate.py --scores <(cut -f 10 scores.testing.other) --classes combinedData.testing.classes --classBalance $testing_classBalance --analysisName ltc-amw  >> curves.all
 ```
 
 Then we finally calculate the area under the precision recall curve for each method.
