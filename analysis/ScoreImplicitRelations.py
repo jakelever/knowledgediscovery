@@ -36,7 +36,9 @@ def calculateAverageMinimumWeight(x,z,neighbours,cooccurrences,occurrences):
 def calculateLinkingTermCountwithAMW(x,z,neighbours,cooccurrences,occurrences):
 	linkingTermCount = calculateArrowsmithScore(x,z,neighbours,cooccurrences,occurrences)
 	amw = calculateAverageMinimumWeight(x,z,neighbours,cooccurrences,occurrences)
-	return 1000.0 * linkingTermCount + 0.001 * amw
+
+	# In order to sort by LTC then by AMW, we simply scale up the LTC term in comparison to AMW (only works if AMW is less than 1000)
+	return linkingTermCount + 0.001 * amw
 
 def calculateBitolaScore(x,z,neighbours,cooccurrences,occurrences):
 	shared = neighbours[x].intersection(neighbours[z])
@@ -154,6 +156,8 @@ if __name__ == '__main__':
 			
 			amwScore = calculateAverageMinimumWeight(x,z,neighbours,cooccurrences,occurrences)
 			ltc_amwScore = calculateLinkingTermCountwithAMW(x,z,neighbours,cooccurrences,occurrences)
+
+			assert amwScore < 1000.0, "The LTC-AMW score currently limits the AMW score to no more than 1000.0"
 
 			outData = [x,z,factaPlusScore,bitolaScore,anniScore,arrowsmithScore,jaccardScore,preferentialAttachmentScore,amwScore,ltc_amwScore]
 			outLine = "\t".join(map(str,outData))
