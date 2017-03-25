@@ -17,6 +17,8 @@ data$method[data$method=='factaPlus'] <- 'FACTA+'
 data$method[data$method=='jaccard'] <- 'Jaccard'
 data$method[data$method=='arrowsmith'] <- 'Arrowsmith'
 data$method[data$method=='bitola'] <- 'BITOLA'
+data$method[data$method=='amw'] <- 'AMW'
+data$method[data$method=='ltc-amw'] <- 'LTC-AMW'
 data$method[grep('SVD',data$method)] <- 'SVD'
 
 png(outPlot)

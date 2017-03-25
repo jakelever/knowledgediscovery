@@ -19,6 +19,8 @@ data$analysisName[data$analysisName=='factaPlus'] <- 'FACTA+'
 data$analysisName[data$analysisName=='jaccard'] <- 'Jaccard'
 data$analysisName[data$analysisName=='arrowsmith'] <- 'Arrowsmith'
 data$analysisName[data$analysisName=='bitola'] <- 'BITOLA'
+data$analysisName[data$analysisName=='amw'] <- 'AMW'
+data$analysisName[data$analysisName=='ltc-amw'] <- 'LTC-AMW'
 data$analysisName[grep('SVD',data$analysisName)] <- 'SVD'
 
 png(outPlot)

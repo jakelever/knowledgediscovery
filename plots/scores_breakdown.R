@@ -19,7 +19,7 @@ colnames(svdData) <- c('idX','idY','score')
 # Then load the other methods data
 
 otherData <- read.table(inOtherData)
-colnames(otherData) <- c("idX","idY","factaPlusScore","bitolaScore","anniScore","arrowsmithScore","jaccardScore","preferentialAttachmentScore")
+colnames(otherData) <- c("idX","idY","factaPlusScore","bitolaScore","anniScore","arrowsmithScore","jaccardScore","preferentialAttachmentScore","amwScore","ltcamwScore")
 otherData$svdScore <- svdData$score
 otherData$class <- classData$class
 otherData <- otherData[,3:ncol(otherData)]
@@ -37,8 +37,8 @@ meltedData$class <- as.factor(meltedData$class)
 
 #names <- c("factaPlusScore","bitolaScore","anniScore","arrowsmithScore","jaccardScore","preferentialAttachmentScore","svdScore")
 #titles <- c("FACTA","BITOLA","ANNI","Arrowsmith","Jaccard","Preferential Attachment","SVD")
-names <- c("anniScore","arrowsmithScore","bitolaScore","factaPlusScore","jaccardScore","preferentialAttachmentScore","svdScore")
-titles <- c("ANNI","Arrowsmith","BITOLA","FACTA+","Jaccard","Preferential Attachment","SVD")
+names <- c("amwScore","anniScore","arrowsmithScore","bitolaScore","factaPlusScore","jaccardScore","ltcamwScore","preferentialAttachmentScore","svdScore")
+titles <- c("AMW","ANNI","Arrowsmith","BITOLA","FACTA+","Jaccard","LTC-AMW","Preferential Attachment","SVD")
 #stopifnot(length(names)==length(titles))
 
 png(outPlot, height = 750, width = 500, units = 'px')
