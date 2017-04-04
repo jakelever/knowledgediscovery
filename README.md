@@ -265,6 +265,12 @@ do
 done
 ```
 
+We'll also calculate the total number of predictions made using the parameters (# singular values and threshold). This will give us a better idea of precision when making these predictions.
+
+```bash
+python ../analysis/countSVDPredictions.py --svdU svd.trainingAndValidation.U --svdV svd.trainingAndValidation.V --svdSV svd.trainingAndValidation.SV --sv $optimalSV --threshold $optimalThreshold --idsFile finalDataset/trainingAndValidation.ids --relationsToIgnore finalDataset/trainingAndValidation.cooccurrences --outFile yearByYear.predcount
+```
+
 ## Plot Figures
 
 Lastly we plot the figures used in the paper. The first is a comparison of the different methods.
