@@ -338,3 +338,11 @@ rm predictions.parkinsons.txt predictions.parkinsons.novel.txt
 
 ```
 
+## Data Stats
+
+Lastly we'll collect a few statistics about our dataset for the publcation.
+
+```bash
+grep -F "<Abstract>" medlineAndPMC/medline/*  | wc -l > summary.abstractCount
+cat medlineAndPMC/pmcSummary.txt | wc -l > summary.articleCount
+```
