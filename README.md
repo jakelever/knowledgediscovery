@@ -299,7 +299,7 @@ The next is an analysis of the years after the split year
 
 ## Make Predictions for Alzheimer's and Parkinson's Disease
 
-Lastly we'll output predictions for Alzheimer's and Parkinson's.
+We'll output predictions for Alzheimer's and Parkinson's.
 
 ```bash
 # Store the CUIDs for Alzheimer's and Parkinson's
