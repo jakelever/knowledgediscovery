@@ -345,4 +345,11 @@ Lastly we'll collect a few statistics about our dataset for the publcation.
 ```bash
 grep -F "<Abstract>" medlineAndPMC/medline/*  | wc -l > summary.abstractCount
 cat medlineAndPMC/pmcSummary.txt | wc -l > summary.articleCount
+
+cat umlsWordlist.Final.txt | wc -l > summary.fullWordlistCount
+cat finalDataset/all.ids | wc -l > summary.observedWordlistCount
+
+cat finalDataset/trainingAndValidation.cooccurrences | wc -l > summary.trainingCooccurenceCount
+cat finalDataset/trainingAndValidation.ids | wc -l > summary.trainingTermsCount
+cat finalDataset/testing.all.cooccurrences | wc -l > summary.testingCooccurenceCount
 ```
