@@ -38,6 +38,7 @@ cd ../
 We're going to do all analysis inside a working directory and call the various scripts from within it. So in the root of this repo we do the following.
 
 ```bash
+rm -fr workingDir # Delete any old analysis and start clean
 mkdir workingDir
 cd workingDir
 ```
