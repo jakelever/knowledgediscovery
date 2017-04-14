@@ -245,9 +245,43 @@ Then we finally calculate the area under the precision recall curve for each met
 python ../analysis/statsCalculator.py --evaluationFile curves.all > curves.stats
 ```
 
+## Understand FACTA+ performance
+
+FACTA+ shows poor performance and he were delve into a single case of rare terms. The two IDs (1021762 and 1024249) are associated with a probability of 1.0 even though all the other methods give a very low score. The two terms are "discorhabdin Y" and "aspernidine A". The one shared intermediate term is "alkaloids". The code below pulls out this information and checks the appropriate occurrence and cooccurrence counts.
+
+```bash
+n1=1021762
+n2=1024249
+
+t1=`sed -n $(($n1+1))p umlsWordlist.Final.txt`
+t2=`sed -n $(($n2+1))p umlsWordlist.Final.txt`
+
+grep $n1 finalDataset/trainingAndValidation.cooccurrences > facta.cooccurrences1
+grep $n2 finalDataset/trainingAndValidation.cooccurrences > facta.cooccurrences2
+
+# Find the one intermediate term
+cat facta.cooccurrences1 facta.cooccurrences2 | cut -f 1,2 -d $'\t' | tr '\t' '\n' | grep -vx $n1 | grep -vx $n2 | sort | uniq -c | awk ' { if ($1>1) print $2 }' > facta.shared
+
+# Double check that there is one a single shared term for these
+sharedCount=`cat facta.shared | wc -l`
+if [[ $sharedCount -ne 1 ]]; then
+	echo "ERROR: More than one shared term."
+	exit 255
+fi
+
+nInter=`cat facta.shared`
+tInter=`sed -n $(($nInter+1))p umlsWordlist.Final.txt`
+
+echo $tInter
+
+grep -P "^$n1\t" finalDataset/trainingAndValidation.occurrences > facta.occurrences1
+grep -P "^$n2\t" finalDataset/trainingAndValidation.occurrences > facta.occurrences2
+grep -P "^$nInter\t" finalDataset/trainingAndValidation.occurrences > facta.occurrencesInter
+```
+
 ## Calculate Predictions for Following Years
 
-Insert explanation here
+Here we go through each year after the training set and see what percentage of known cooccurrences are in our prediction set. So for year 2011 to 2016, we calculate the scores for all the known cooccurrences and count how many are above the optimal threshold that we had selected previously (0.44).
 
 ```bash
 rm -f yearByYear.results
@@ -299,7 +333,7 @@ The next is an analysis of the years after the split year
 
 ## Make Predictions for Alzheimer's and Parkinson's Disease
 
-Lastly we'll output predictions for Alzheimer's and Parkinson's.
+We'll output predictions for Alzheimer's and Parkinson's.
 
 ```bash
 # Store the CUIDs for Alzheimer's and Parkinson's
