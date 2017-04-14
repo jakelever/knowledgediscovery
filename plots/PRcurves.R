@@ -1,5 +1,6 @@
 
 library(lattice)
+library(RColorBrewer)
 
 args <- commandArgs(TRUE)
 
@@ -23,7 +24,27 @@ data$analysisName[data$analysisName=='amw'] <- 'AMW'
 data$analysisName[data$analysisName=='ltc-amw'] <- 'LTC-AMW'
 data$analysisName[grep('SVD',data$analysisName)] <- 'SVD'
 
+
+myColours <- c(brewer.pal(8,"Dark2"),"#000000")
+my.settings <- list(
+  superpose.polygon=list(col=myColours),
+  strip.background=list(col=myColours),
+  superpose.line=list(col=myColours),
+  strip.border=list(col="black")
+)
+
+#png(outPlot, height = 500, width = 800, units = 'px')
 png(outPlot)
-xyplot(adjusted_precision~true_positive_rate,data,groups=analysisName,type="l",xlim=c(0,1),ylim=c(0,1),auto.key=T,xlab="Recall",ylab="Precision")
+xyplot(adjusted_precision~true_positive_rate,
+       data,groups=analysisName,
+       type="l",
+       xlim=c(0,1),
+       ylim=c(0,1),
+       auto.key=list(space="top", columns=3, 
+                     points=FALSE, rectangles=TRUE),
+       par.settings = my.settings,
+       xlab="Recall",
+       ylab="Precision",
+       lwd=2)
 dev.off()
 

@@ -9,6 +9,7 @@ inOtherData <- args[2]
 inClasses <- args[3]
 outPlot <- args[4]
 
+# Load the class data (binary)
 classData <- read.table(inClasses)
 colnames(classData) <- c('class')
 
@@ -17,31 +18,32 @@ svdData <- read.table(inSVDData)
 colnames(svdData) <- c('idX','idY','score')
 
 # Then load the other methods data
-
 otherData <- read.table(inOtherData)
 colnames(otherData) <- c("idX","idY","factaPlusScore","bitolaScore","anniScore","arrowsmithScore","jaccardScore","preferentialAttachmentScore","amwScore","ltcamwScore")
+
+# Merge in the SVD scores and class data
 otherData$svdScore <- svdData$score
 otherData$class <- classData$class
+
+# Remove the coordinates (don't need them)
 otherData <- otherData[,3:ncol(otherData)]
 
+# Melt the data so that method becomes a column (and rename the columns appropriately)
 meltedData <- melt(otherData,id="class")
 colnames(meltedData) <- c("class","method","score")
 
+# Rename the classes to Positive/Negative
 meltedData$class[meltedData$class==0] <- 'Negative'
 meltedData$class[meltedData$class==1] <- 'Positive'
 
 meltedData$class <- as.factor(meltedData$class)
 
-
-# And plot everything
-
-#names <- c("factaPlusScore","bitolaScore","anniScore","arrowsmithScore","jaccardScore","preferentialAttachmentScore","svdScore")
-#titles <- c("FACTA","BITOLA","ANNI","Arrowsmith","Jaccard","Preferential Attachment","SVD")
+# Organise how the columns should be mapped to titles for each subfigure
 names <- c("amwScore","anniScore","arrowsmithScore","bitolaScore","factaPlusScore","jaccardScore","ltcamwScore","preferentialAttachmentScore","svdScore")
 titles <- c("AMW","ANNI","Arrowsmith","BITOLA","FACTA+","Jaccard","LTC-AMW","Preferential Attachment","SVD")
-#stopifnot(length(names)==length(titles))
 
-png(outPlot, height = 750, width = 500, units = 'px')
+# Then we do lots of sub-plots and merge them together
+png(outPlot, height = 1000, width = 500, units = 'px')
 cols <- 2
 rows <- ceiling(length(names)/cols)
 for (i in 1:length(names))
