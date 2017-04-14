@@ -1,6 +1,6 @@
 # Knowledge Discovery using Recommendation Systems
 
-All this code WILL BE in a master script that can run the entire analysis.
+Below is an explanation with code inserts to do the complete analysis for the paper.
 
 ## Install Dependencies
 
@@ -15,11 +15,17 @@ bash install.tclap.sh
 cd ../
 ```
 
+You'll need to download UMLS and install the Active Set. Then update the variable below.
+
+```bash
+UMLSDIR=/projects/bioracle/ncbiData/umls/2016AB/META/
+```
+
 ## Setup Lingpipe
 
 ## Compile ANNI vector generation code
 
-Most of the analysis code is in Python and doesn't require compilation. Only the code to generate ANNI concept vectors requires compilation as it is written in C++.
+Most of the analysis code is in Python and doesn't require compilation. Only the code to generate ANNI concept profile vectors requires compilation as it is written in C++.
 
 ```bash
 cd anniVectors
@@ -53,7 +59,7 @@ This involves downloading UMLS from https://www.nlm.nih.gov/research/umls/licens
 A script will pull out the necessary terms, their IDs, semantic types and synonyms from the UMLS RRF files.
 
 ```bash
-bash ../data/generateUMLSWordlist.sh /projects/bioracle/ncbiData/umls/2016AB/META/ ./
+bash ../data/generateUMLSWordlist.sh $UMLSDIR ./
 ```
 
 TEMPORARY: We'll do a little simplification for the testing process. Basically we going to build a mini word-list
