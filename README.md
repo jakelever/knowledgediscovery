@@ -344,8 +344,8 @@ We'll output predictions for Alzheimer's and Parkinson's.
 
 ```bash
 # Store the CUIDs for Alzheimer's and Parkinson's
-echo "C0002395" >> cuids.alzheimers.txt
-echo "C0030567" >> cuids.parkinsons.txt
+echo "C0002395" > cuids.alzheimers.txt
+echo "C0030567" > cuids.parkinsons.txt
 echo "C0242422" >> cuids.parkinsons.txt
 
 # Use the CUIDs to find the row numbers for each term
