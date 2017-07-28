@@ -22,7 +22,7 @@ echo preferentialAttachment >> otherMethods.txt
 echo amw >> otherMethods.txt
 echo ltc-amw >> otherMethods.txt
 
-rm -f predictioncomparison.txt
+rm -f predictioncomparison.correct.txt predictioncomparison.all.txt
 col=3
 while read method
 do
