@@ -124,7 +124,7 @@ if __name__ == '__main__':
 			neighbours[y].add(x)
 	print "Loaded cooccurrences"
 
-	doANNI = args.anniVectorsIndex and args.args.anniVectors
+	doANNI = args.anniVectorsIndex and args.anniVectors
 	if doANNI:
 		print "Loading ANNI concept vectors..."
 		#anniConceptVectors = prepareANNIConceptVectors(entitiesToScore,neighbours,cooccurrences,occurrences,sentenceCount)
