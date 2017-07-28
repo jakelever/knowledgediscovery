@@ -15,6 +15,8 @@ data$recall <- data$predicted/data$total
 data <- data[data$year!=2017,]
 
 png(outPlot)
+#setEPS()
+#postscript(outPlot)
 barchart( recall ~ year, data, horizontal=F, ylim=c(0,1.1*max(data$recall)), col="black",xlab="Year for Test Data",ylab="Recall")
 dev.off()
 
