@@ -44,6 +44,8 @@ titles <- c("AMW","ANNI","Arrowsmith","BITOLA","FACTA+","Jaccard","LTC-AMW","Pre
 
 # Then we do lots of sub-plots and merge them together
 png(outPlot, height = 1000, width = 500, units = 'px')
+#setEPS()
+#postscript(outPlot, height=16, width=6)
 cols <- 2
 rows <- ceiling(length(names)/cols)
 for (i in 1:length(names))

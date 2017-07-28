@@ -22,6 +22,8 @@ data$method[data$method=='ltc-amw'] <- 'LTC-AMW'
 data$method[grep('SVD',data$method)] <- 'SVD'
 
 png(outPlot)
+#setEPS()
+#postscript(outPlot)
 barchart( areaUnderPRCurve ~ method, data, col="black",scales=list(x=list(rot=45)), xlab="Method", ylab="Area Under the Precision Recall curve")
 dev.off()
 

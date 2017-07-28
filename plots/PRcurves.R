@@ -33,8 +33,9 @@ my.settings <- list(
   strip.border=list(col="black")
 )
 
-#png(outPlot, height = 500, width = 800, units = 'px')
 png(outPlot)
+#setEPS()
+#postscript(outPlot)
 xyplot(adjusted_precision~true_positive_rate,
        data,groups=analysisName,
        type="l",
