@@ -35,11 +35,15 @@ do
 	thresholdForThisMethod=`cat thresholds.$method.txt`
 	
 	# 
-	paste scores.testing.other combinedData.testing.classes | awk -v threshold=$thresholdForThisMethod -v col=$col -v method=$method ' { if ($9==1 && $col > threshold) print method"\t"$1"_"$2; } ' >> predictioncomparison.txt
+	paste scores.testing.other combinedData.testing.classes | awk -v threshold=$thresholdForThisMethod -v col=$col -v method=$method ' { if ($9==1 && $col > threshold) print method"\t"$1"_"$2; } ' >> predictioncomparison.correct.txt
+	
+	paste scores.testing.other combinedData.testing.classes | awk -v threshold=$thresholdForThisMethod -v col=$col -v method=$method ' { if ($col > threshold) print method"\t"$1"_"$2; } ' >> predictioncomparison.all.txt
 	
 	col=$(($col+1))
 done < otherMethods.txt
 
-# We're looking at prediction overlap - not necessarily correct prediction overlap. Or are we? 
-paste scores.testing.svd combinedData.testing.classes  | awk -v threshold=$optimalThreshold ' { if ($4==1 && $3 > threshold) print "svd\t"$1"_"$2; } ' >> predictioncomparison.txt
+paste scores.testing.svd combinedData.testing.classes  | awk -v threshold=$optimalThreshold ' { if ($4==1 && $3 > threshold) print "svd\t"$1"_"$2; } ' >> predictioncomparison.correct.txt
+
+paste scores.testing.svd combinedData.testing.classes  | awk -v threshold=$optimalThreshold ' { if ($3 > threshold) print "svd\t"$1"_"$2; } ' >> predictioncomparison.all.txt
+
 
