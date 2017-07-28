@@ -26,6 +26,7 @@ if __name__ == '__main__':
 
 	positiveCount = sum(classes)
 	negativeCount = len(classes) - positiveCount
+	positiveNegativeRatio = float(positiveCount) / float(negativeCount)
 
 	# We combined the score data with boolean to track whether its associated with a positive or negative
 	# class. We then sort them by the threshold
@@ -69,7 +70,7 @@ if __name__ == '__main__':
 			false_positive_rate = fp / float(fp + tn)
 
 		if (tp+fp) != 0:
-			adjusted_precision = (cb*tp) / (cb*tp + oneMinusCB * fp)
+			adjusted_precision = (cb*tp) / (cb*tp + oneMinusCB * positiveNegativeRatio * fp)
 
 		adjusted_f1score = 0.0
 		if (true_positive_rate+adjusted_precision) != 0.0:
