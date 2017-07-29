@@ -46,4 +46,5 @@ paste scores.testing.svd combinedData.testing.classes  | awk -v threshold=$optim
 
 paste scores.testing.svd combinedData.testing.classes  | awk -v threshold=$optimalThreshold ' { if ($3 > threshold) print "svd\t"$1"_"$2; } ' >> predictioncomparison.all.txt
 
-
+cat results.otherMethods.*.txt > results.allOtherMethods.txt
+python ../analysis/statsCalculator.py --evaluationFile results.allOtherMethods.txt > areaUnderCurve.allOtherMethods.txt
