@@ -70,7 +70,9 @@ if __name__ == '__main__':
 		idsB = sorted(list(set(idsB)))
 		iterator = itertools.product(idsA,idsB)
 	else:
-		raise RuntimeError('Must either supply --relationsToScore or (--idsFileA and --idsFileA)')
+		fullRange = svdU_lookup.keys()
+		iterator = itertools.combinations(fullRange,2)
+		#raise RuntimeError('Must either supply --relationsToScore or (--idsFileA and --idsFileA)')
 
 	print "Calculating scores..."
 	with open(args.outFile,'w') as outF:
