@@ -381,7 +381,7 @@ rm predictions.parkinsons.txt predictions.parkinsons.novel.txt
 
 ## Data Stats
 
-Lastly we'll collect a few statistics about our dataset for the publcation.
+We'll collect a few statistics about our dataset for the publcation.
 
 ```bash
 grep -F "<Abstract>" medlineAndPMC/medline/*  | wc -l > summary.abstractCount
@@ -394,3 +394,50 @@ cat finalDataset/trainingAndValidation.cooccurrences | wc -l > summary.trainingC
 cat finalDataset/trainingAndValidation.ids | wc -l > summary.trainingTermsCount
 cat finalDataset/testing.all.cooccurrences | wc -l > summary.testingCooccurenceCount
 ```
+
+## Prediction Overlap
+
+As a discussion point, we'll get all the methods to make a fixed set of predictions. We do this by using the training/validation data split and calculating a threshold for each method (such that F1-score is maximized on the validation set). We then get the systems to make predictions using the training+validation set and compare to the test sets (and each other). This way, we can see what the overlap is between predictions created by the different methods
+
+```bash
+../anniVectors/generateAnniVectors --cooccurrenceData finalDataset/training.cooccurrences --occurrenceData finalDataset/training.occurrences --sentenceCount `cat finalDataset/training.sentenceCounts` --vectorsToCalculate finalDataset/training.ids --outIndexFile anni.training.index --outVectorFile anni.training.vectors
+
+python ../analysis/ScoreImplicitRelations.py --cooccurrenceFile finalDataset/training.cooccurrences --occurrenceFile finalDataset/training.occurrences --sentenceCount finalDataset/training.sentenceCounts --relationsToScore combinedData.validation.coords --anniVectors anni.training.vectors --anniVectorsIndex anni.training.index --outFile scores.validation.other
+
+echo factaPlus > otherMethods.txt
+echo bitola >> otherMethods.txt
+echo anni >> otherMethods.txt
+echo arrowsmith >> otherMethods.txt
+echo jaccard >> otherMethods.txt
+echo preferentialAttachment >> otherMethods.txt
+echo amw >> otherMethods.txt
+echo ltc-amw >> otherMethods.txt
+
+rm -f predictioncomparison.correct.txt predictioncomparison.all.txt
+col=3
+while read method
+do
+	method=`echo $method`
+	
+	python ../analysis/evaluate.py --scores <(cut -f $col scores.validation.other) --classes combinedData.validation.classes --classBalance $validation_classBalance --analysisName $method > results.otherMethods.$method.txt
+	
+	sort -k5,5g results.otherMethods.$method.txt | cut -f 10 -d $'\t' | tail -n 1 > thresholds.$method.txt
+	
+	thresholdForThisMethod=`cat thresholds.$method.txt`
+	
+	# 
+	paste scores.testing.other combinedData.testing.classes | awk -v threshold=$thresholdForThisMethod -v col=$col -v method=$method ' { if ($NF==1 && $col > threshold) print method"\t"$1"_"$2; } ' >> predictioncomparison.correct.txt
+	
+	paste scores.testing.other combinedData.testing.classes | awk -v threshold=$thresholdForThisMethod -v col=$col -v method=$method ' { if ($col > threshold) print method"\t"$1"_"$2; } ' >> predictioncomparison.all.txt
+	
+	col=$(($col+1))
+done < otherMethods.txt
+
+paste scores.testing.svd combinedData.testing.classes  | awk -v threshold=$optimalThreshold ' { if ($NF==1 && $3 > threshold) print "svd\t"$1"_"$2; } ' >> predictioncomparison.correct.txt
+
+paste scores.testing.svd combinedData.testing.classes  | awk -v threshold=$optimalThreshold ' { if ($3 > threshold) print "svd\t"$1"_"$2; } ' >> predictioncomparison.all.txt
+
+cat results.otherMethods.*.txt > results.allOtherMethods.txt
+python ../analysis/statsCalculator.py --evaluationFile results.allOtherMethods.txt > areaUnderCurve.allOtherMethods.txt
+```
+
