@@ -400,10 +400,13 @@ cat finalDataset/testing.all.cooccurrences | wc -l > summary.testingCooccurenceC
 As a discussion point, we'll get all the methods to make a fixed set of predictions. We do this by using the training/validation data split and calculating a threshold for each method (such that F1-score is maximized on the validation set). We then get the systems to make predictions using the training+validation set and compare to the test sets (and each other). This way, we can see what the overlap is between predictions created by the different methods
 
 ```bash
+# We need ANNI vectors trained on just the training dataset
 ../anniVectors/generateAnniVectors --cooccurrenceData finalDataset/training.cooccurrences --occurrenceData finalDataset/training.occurrences --sentenceCount `cat finalDataset/training.sentenceCounts` --vectorsToCalculate finalDataset/training.ids --outIndexFile anni.training.index --outVectorFile anni.training.vectors
 
+# Now we can generate scores for the other methods using the training data for training and evaluated on the validation set
 python ../analysis/ScoreImplicitRelations.py --cooccurrenceFile finalDataset/training.cooccurrences --occurrenceFile finalDataset/training.occurrences --sentenceCount finalDataset/training.sentenceCounts --relationsToScore combinedData.validation.coords --anniVectors anni.training.vectors --anniVectorsIndex anni.training.index --outFile scores.validation.other
 
+# We list out the method names for iteration purposes. The ordering is the same as the output file from ScoreImplicitRelations.py
 echo factaPlus > otherMethods.txt
 echo bitola >> otherMethods.txt
 echo anni >> otherMethods.txt
@@ -414,30 +417,32 @@ echo amw >> otherMethods.txt
 echo ltc-amw >> otherMethods.txt
 
 rm -f predictioncomparison.correct.txt predictioncomparison.all.txt
+
+# The scores start from column 3 (column 1/2 are the cooccurrence indices)
 col=3
 while read method
 do
+	# This is the method name (trimmed just in case)
 	method=`echo $method`
 	
+	# Calculate the F1-score (and other metrics) for all possible thresholds
 	python ../analysis/evaluate.py --scores <(cut -f $col scores.validation.other) --classes combinedData.validation.classes --classBalance $validation_classBalance --analysisName $method > results.otherMethods.$method.txt
 	
+	# Sort by F1-score (column 5) and pick the threshold (column 10) that gives the best threshold
 	sort -k5,5g results.otherMethods.$method.txt | cut -f 10 -d $'\t' | tail -n 1 > thresholds.$method.txt
-	
 	thresholdForThisMethod=`cat thresholds.$method.txt`
 	
-	# 
+	# Use this threshold with the previously generated scores on the test set. In this case, only include data points that are positive
 	paste scores.testing.other combinedData.testing.classes | awk -v threshold=$thresholdForThisMethod -v col=$col -v method=$method ' { if ($NF==1 && $col > threshold) print method"\t"$1"_"$2; } ' >> predictioncomparison.correct.txt
 	
+	# Same idea, but include positive and negative data points
 	paste scores.testing.other combinedData.testing.classes | awk -v threshold=$thresholdForThisMethod -v col=$col -v method=$method ' { if ($col > threshold) print method"\t"$1"_"$2; } ' >> predictioncomparison.all.txt
 	
 	col=$(($col+1))
 done < otherMethods.txt
 
+# We already have the optimal threshold for SVD, so let's use the same approach and add the SVD results to these files (positive only and positive & negative)
 paste scores.testing.svd combinedData.testing.classes  | awk -v threshold=$optimalThreshold ' { if ($NF==1 && $3 > threshold) print "svd\t"$1"_"$2; } ' >> predictioncomparison.correct.txt
-
 paste scores.testing.svd combinedData.testing.classes  | awk -v threshold=$optimalThreshold ' { if ($3 > threshold) print "svd\t"$1"_"$2; } ' >> predictioncomparison.all.txt
-
-cat results.otherMethods.*.txt > results.allOtherMethods.txt
-python ../analysis/statsCalculator.py --evaluationFile results.allOtherMethods.txt > areaUnderCurve.allOtherMethods.txt
 ```
 
