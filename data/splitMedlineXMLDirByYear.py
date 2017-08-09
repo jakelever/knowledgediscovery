@@ -28,19 +28,21 @@ if __name__ == "__main__":
 	# Arguments for the command line
 	parser = argparse.ArgumentParser(description='Extracts MEDLINE XML files and splits them into files based on publication years')
 	parser.add_argument('--medlineXMLDir', required=True, type=existing_filepath, help='Path to a directory containing MedlineXML files')
-	parser.add_argument('--pmidExclusionFile', required=True, type=existing_filepath, help='A file of PMIDs to exclude')
+	parser.add_argument('--pmidExclusionFile', type=existing_filepath, help='A file of PMIDs to exclude')
 	parser.add_argument('--outDir', required=True, type=readable_dir, help='The output directory to store the split Medline files')
 	args = parser.parse_args()
 	
 	header = '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE MedlineCitationSet PUBLIC "-//NLM//DTD Medline Citation, 1st January, 2015//EN"\n                                    "http://www.nlm.nih.gov/databases/dtd/nlmmedlinecitationset_150101.dtd">\n<MedlineCitationSet>\n'
 	footer = '</MedlineCitationSet>\n'
-	
-	print "Loading PMID exclusions..."
+
+
 	pmidExclusions = {}
-	with open(args.pmidExclusionFile) as f:
-		for line in f:
-			pmid = int(line.strip())
-			pmidExclusions[pmid] = True
+	if args.pmidExclusionFile:
+		print "Loading PMID exclusions..."
+		with open(args.pmidExclusionFile) as f:
+			for line in f:
+				pmid = int(line.strip())
+				pmidExclusions[pmid] = True
 	
 	# Tidy up some paths
 	medlineXMLDir = args.medlineXMLDir
