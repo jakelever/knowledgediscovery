@@ -53,7 +53,23 @@ for (i in 1:length(names))
   name <- names[i]
   title <- titles[i]
   
-  tmpPlot <- histogram(~score | class, meltedData[meltedData$method==name,], layout=c(1,2), main=title, col="white", par.settings = list(strip.background=list(col="lightgrey")))
+  #tmpPlot <- histogram(~score | class, meltedData[meltedData$method==name,], layout=c(1,2), main=title, col="white", par.settings = list(strip.background=list(col="lightgrey")))
+  #tmpPlot <- densityplot(~score | class, meltedData[meltedData$method==name,], plot.points = FALSE, layout=c(1,2), main=title, col="black", par.settings = list(strip.background=list(col="lightgrey")))
+    tmpPlot <- bwplot(~score|class,
+	data=meltedData[meltedData$method==name,], 
+	horizontal=TRUE,
+	layout=c(1,2),
+	panel = function(..., box.ratio) {
+	panel.violin(..., col = "gray",
+	varwidth = FALSE, box.ratio = box.ratio)
+	#panel.bwplot(..., col='black',
+	#             cex=0.8, pch='|', fill='white', box.ratio = .1)
+	},
+	par.settings = list(box.rectangle=list(col='black'),
+	plot.symbol = list(pch='.', cex = 0.1),
+	strip.background=list(col="lightgrey")),
+	main=title
+	)
 
   row <- floor((i+1)/cols)
   col <- ((i+1)%%cols)+1
