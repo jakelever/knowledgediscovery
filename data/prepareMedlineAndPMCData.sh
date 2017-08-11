@@ -42,6 +42,9 @@ cut -f 1 -d $'\t' $medlinePMCDir/pmcSummary.txt | sed -e '/^$/d' | sort -n -u > 
 mkdir $medlinePMCDir/filteredMedline
 python $HERE/splitMedlineXMLDirByYear.py --medlineXMLDir $medlinePMCDir/medline --pmidExclusionFile $medlinePMCDir/pmcPMIDs.txt --outDir $medlinePMCDir/filteredMedline
 
+mkdir $medlinePMCDir/unfilteredMedline
+python $HERE/splitMedlineXMLDirByYear.py --medlineXMLDir $medlinePMCDir/medline --outDir $medlinePMCDir/unfilteredMedline
+
 # And finally we generate lists of PMC articles based on publication date
 bash $HERE/generateArticleListsByYear.sh $medlinePMCDir/pmcSummary.txt $medlinePMCDir/articleLists
 
