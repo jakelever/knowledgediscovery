@@ -1,64 +1,5 @@
 import argparse
-from math import log
-from collections import defaultdict
-
-from multiprocessing import Pool,Manager
-from functools import partial
-from contextlib import closing
-import time
-import logging
-import sys
 import numpy as np
-
-def D(v,w,cooccurrences,occurrences):
-	p1 = cooccurrences[(v,w)] / float(occurrences[v])
-	p2 = cooccurrences[(v,w)] / float(occurrences[w])
-	return max(p1,p2)
-
-def calculateFactaPlusScore(x,z,neighbours,cooccurrences,occurrences):
-	shared = neighbours[x].intersection(neighbours[z])
-	product = 1.0
-	for y in shared:
-		tmp = 1.0 - D(x,y,cooccurrences,occurrences) * D(y,z,cooccurrences,occurrences)
-		product *= tmp
-	return 1.0 - product
-
-def calculateAverageMinimumWeight(x,z,neighbours,cooccurrences,occurrences):
-	shared = neighbours[x].intersection(neighbours[z])
-	if len(shared) == 0:
-		return 0
-
-	total = 0.0
-	for y in shared:
-		total += min(cooccurrences[(x,y)],cooccurrences[(y,z)])
-	return total / float(len(shared))
-
-def calculateLinkingTermCountwithAMW(x,z,neighbours,cooccurrences,occurrences):
-	linkingTermCount = calculateArrowsmithScore(x,z,neighbours,cooccurrences,occurrences)
-	amw = calculateAverageMinimumWeight(x,z,neighbours,cooccurrences,occurrences)
-
-	# In order to sort by LTC then by AMW, we simply scale up the LTC term in comparison to AMW (only works if AMW is less than 1000)
-	return linkingTermCount + 0.001 * amw
-
-def calculateBitolaScore(x,z,neighbours,cooccurrences,occurrences):
-	shared = neighbours[x].intersection(neighbours[z])
-	total = 0
-	for y in shared:
-		total += cooccurrences[(x,y)] * cooccurrences[(y,z)]
-	return total
-
-def calculateArrowsmithScore(x,z,neighbours,cooccurrences,occurrences):
-	shared = neighbours[x].intersection(neighbours[z])
-	return len(shared)
-
-def calculateJaccardIndex(x,z,neighbours,cooccurrences,occurrences):
-	shared = neighbours[x].intersection(neighbours[z])
-	combined = neighbours[x].union(neighbours[z])
-	return len(shared)/float(len(combined))
-
-def calculatePreferentialAttachment(x,z,neighbours,cooccurrences,occurrences):
-	score = len(neighbours[x]) + len(neighbours[z])
-	return score
 				
 def calculateANNIScore(x,z,conceptVectorsIndex,conceptVectors):
 	indexX = conceptVectorsIndex[x]
@@ -67,10 +8,6 @@ def calculateANNIScore(x,z,conceptVectorsIndex,conceptVectors):
 	vectorX = conceptVectors[indexX,:]
 	vectorZ = conceptVectors[indexZ,:]
 	dotprod = np.dot(vectorX,vectorZ)
-	#entities = vectorX.keys().intersection(vectorZ.keys())
-	#dotprod = sum( [ vectorX[e]*vectorZ[e] for e in entities ] )
-	#assert len(vectorX) == len(vectorZ)
-	#dotprod = sum( [ i*j for i,j in zip(vectorX,vectorZ) ] )
 	return dotprod
 
 if __name__ == '__main__':
@@ -98,32 +35,6 @@ if __name__ == '__main__':
 	entitiesToScore = sorted(list(entitiesToScore))
 	print "Loaded relationsToScore"
 
-	print "Loading sentenceCount"
-	sentenceCount = None
-	with open(args.sentenceCount) as f:
-		sentenceCount = int(f.readline().strip())
-	print "Loaded sentenceCount"
-
-	print "Loading occurrences..."
-	occurrences = {}
-	with open(args.occurrenceFile) as f:
-		for line in f:
-			x,count = map(int,line.strip().split())
-			occurrences[x] = count
-	print "Loaded occurrences"
-
-	print "Loading cooccurrences..."
-	cooccurrences = {}
-	neighbours = defaultdict(set)
-	with open(args.cooccurrenceFile) as f:
-		for line in f:
-			x,y,count = map(int,line.strip().split())
-			cooccurrences[(x,y)] = count
-			cooccurrences[(y,x)] = count
-			neighbours[x].add(y)
-			neighbours[y].add(x)
-	print "Loaded cooccurrences"
-
 	doANNI = args.anniVectorsIndex and args.anniVectors
 	if doANNI:
 		print "Loading ANNI concept vectors..."
@@ -140,8 +51,6 @@ if __name__ == '__main__':
 			#l2norm = np.sqrt((anniConceptVectors * anniConceptVectors).sum(axis=1))
 			#anniConceptVectors = anniConceptVectors / l2norm.reshape(anniConceptVectors.shape[0],1)
 
-			
-		
 		print "Loaded ANNI concept vectors"
 
 	print "Scoring..."
