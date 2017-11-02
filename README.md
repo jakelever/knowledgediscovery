@@ -4,7 +4,7 @@ Below is an explanation with code inserts to do the complete analysis for the pa
 
 ## Install Dependencies
 
-There are a few dependencies to install first. Run the following scripts and make sure they all succeeded.
+There are a few dependencies to install first. Run the following scripts and make sure they all succeed.
 
 ```bash
 cd dependencies
