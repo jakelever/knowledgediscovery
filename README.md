@@ -1,6 +1,15 @@
-# Knowledge Discovery using Recommendation Systems
+# A collaborative filtering-based approach to biomedical knowledge discovery
 
-Below is an explanation with code inserts to do the complete analysis for the paper.
+This code is the companion to the Bioinformatics paper (https://doi.org/10.1093/bioinformatics/btx613). To cite this project, there is some Bibtex below. And further below is an explanation with code inserts to do the complete analysis for the paper.
+
+```bibtex
+@article{lever2017collaborative,
+  title={A collaborative filtering-based approach to biomedical knowledge discovery},
+  author={Lever, Jake and Gakkhar, Sitanshu and Gottlieb, Michael and Rashnavadi, Tahereh and Lin, Santina and Siu, Celia and Smith, Maia and Jones, Martin and Krzywinski, Martin and Jones, Steven J},
+  journal={Bioinformatics},
+  year={2017}
+}
+```
 
 ## Install Dependencies
 
