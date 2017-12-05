@@ -30,8 +30,6 @@ You'll need to download UMLS and install the Active Set. Then update the variabl
 UMLSDIR=/projects/bioracle/ncbiData/umls/2016AB/META/
 ```
 
-## Setup Lingpipe
-
 ## Compile ANNI vector generation code
 
 Most of the analysis code is in Python and doesn't require compilation. Only the code to generate ANNI concept profile vectors requires compilation as it is written in C++.
