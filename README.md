@@ -70,7 +70,9 @@ A script will pull out the necessary terms, their IDs, semantic types and synony
 bash ../data/generateUMLSWordlist.sh $UMLSDIR ./
 ```
 
-TEMPORARY: We'll do a little simplification for the testing process. Basically we going to build a mini word-list
+## Replace Wordlist with Simpler One for Testing (optional)
+
+FOR TESTING PURPOSES: We'll do a little simplification for the testing process. Basically we going to build a mini word-list and use that instead. For the full run, the following code block should NOT be executed!
 
 ```bash
 mv umlsWordlist.WithIDs.txt fullWordlist.WithIDs.txt
@@ -89,6 +91,8 @@ mv umlsWordlist.WithIDs.txt.unique umlsWordlist.WithIDs.txt
 
 cut -f 3 -d $'\t' umlsWordlist.WithIDs.txt > umlsWordlist.Final.txt
 ```
+
+## Convert word-list to pickled word-list
 
 We then need to process this wordlist into a Python pickled file and remove stop-words and short words.
 
