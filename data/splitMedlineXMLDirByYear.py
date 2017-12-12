@@ -89,13 +89,22 @@ if __name__ == "__main__":
 						year = yearFields[0].text
 					if len(medlineDateFields) > 0:
 						#year = medlineDateFields[0].text[0:4]
-						yearSearch = re.search('([0-9]{4})', medlineDateFields[0].text)
-						assert yearSearch, "Couldn't find 4 digit year in text: %s"  % medlineDateFields[0].text
-						year = yearSearch.group(1)
+						slashDates = re.search('\d+\/\d+\/(?P<year>\d+)',medlineDateFields[0].text)
+						if slashDates:
+							yearNum = int(slashDates.groupdict()['year'])
+							yearCutoff = date.today().year - 1999
+							if yearNum <= yearCutoff:
+								year = "20%02d" % yearNum
+							else:
+								year = "19%02d" % yearNum
+						else:
+							yearSearch = re.search('([0-9]{4})', medlineDateFields[0].text)
+							assert yearSearch, "Couldn't find 4 digit year in text: %s"  % medlineDateFields[0].text
+							year = yearSearch.group(1)
 					
 					year = int(year)
 
-					assert year >= 1800 and year <= date.today().year, "Publication year (%d) must be between 1800 and this year" % year
+					assert year >= 1800 and year <= (date.today().year+1), "Publication year (%d) must be between 1800 and next year" % year
 					
 					# Let's get the appropriate file handle
 					handle = None
