@@ -1,6 +1,8 @@
 #!/bin/bash
 set -ex
 
+rm -fr geniatagger-python-0.1 geniatagger-3.0.1
+
 # First let's install GeniaTagger
 
 wget http://www.nactem.ac.uk/tsujii/GENIA/tagger/geniatagger-3.0.1.tar.gz

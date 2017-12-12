@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e -x
 
+rm -fr PowerGraph
+
 git clone https://github.com/jakelever/PowerGraph.git
 
 cd PowerGraph
