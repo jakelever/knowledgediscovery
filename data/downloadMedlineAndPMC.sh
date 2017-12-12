@@ -36,10 +36,14 @@ wget --no-verbose --no-parent --recursive --level=1 --no-directories ftp://ftp.n
 # Refer to http://www.ncbi.nlm.nih.gov/pmc/tools/ftp/
 mkdir -p $target/pmc
 cd $target/pmc
-wget ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/articles.A-B.xml.tar.gz
-wget ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/articles.C-H.xml.tar.gz
-wget ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/articles.I-N.xml.tar.gz
-wget ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/articles.O-Z.xml.tar.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/oa_bulk/comm_use.A-B.xml.tar.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/oa_bulk/comm_use.C-H.xml.tar.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/oa_bulk/comm_use.I-N.xml.tar.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/oa_bulk/comm_use.O-Z.xml.tar.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/oa_bulk/non_comm_use.A-B.xml.tar.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/oa_bulk/non_comm_use.C-H.xml.tar.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/oa_bulk/non_comm_use.I-N.xml.tar.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/oa_bulk/non_comm_use.O-Z.xml.tar.gz
 
 # Extract the Medline files
 cd $target/medline
