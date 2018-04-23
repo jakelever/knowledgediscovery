@@ -11,6 +11,12 @@ This code is the companion to the Bioinformatics paper (https://doi.org/10.1093/
 }
 ```
 
+## Data
+
+The generated datasets (which are created by commands below in the finalDataset directory) can be downloaded from Zenodo.
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1227313.svg)](https://doi.org/10.5281/zenodo.1227313)
+
 ## Install Dependencies
 
 There are a few dependencies to install first. Run the following scripts and make sure they all succeed.
